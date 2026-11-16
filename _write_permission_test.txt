@@ -1,3 +1,0 @@
-GitHub connector write-permission verification.
-Branch: test/write-permission-check
-This is a temporary test file and can be deleted safely.
