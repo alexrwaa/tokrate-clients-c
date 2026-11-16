@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { t } from "./i18n";
 import type { SourceId } from "./store/types";
 
 export interface Metric {
@@ -138,7 +139,7 @@ export function toolChipStyle(id: string): ToolChipStyle | undefined {
 const codingTool = (id: string): (typeof CODING_TOOLS)[SourceId] | undefined =>
   CODING_TOOLS[id as SourceId];
 /** Coding-tool name from its id ("claude-code" gives "Claude Code"). */
-export const toolLabel = (id: string) => codingTool(id)?.title ?? "Coding tool";
+export const toolLabel = (id: string) => codingTool(id)?.title ?? t("metric.codingTool");
 /** Two-letter chip of a coding tool; the first two letters of an id missing from the table. */
 export const toolChip = (id: string) => codingTool(id)?.chip ?? id.slice(0, 2).toUpperCase();
 export const clientLabel = (m: Metric) => toolLabel(client(m));
@@ -176,15 +177,19 @@ const RAW_PROVIDER = /^[a-z0-9][a-z0-9._-]{0,39}$/;
  * Display name of a provider: a known provider by name, a raw id (from OpenCode) as it is;
  * missing, "unknown" and unusable ids are an unknown route.
  */
+const isUnknownProvider = (provider: string | null | undefined) =>
+  !provider ||
+  provider === "unknown" ||
+  (!Object.hasOwn(PROVIDER_LABELS, provider) && !RAW_PROVIDER.test(provider));
 export const providerLabel = (provider: string | null | undefined) => {
-  if (!provider || provider === "unknown") return "Unknown route";
+  if (!provider || provider === "unknown") return t("metric.unknownRoute");
   if (Object.hasOwn(PROVIDER_LABELS, provider)) return PROVIDER_LABELS[provider];
-  return RAW_PROVIDER.test(provider) ? provider : "Unknown route";
+  return RAW_PROVIDER.test(provider) ? provider : t("metric.unknownRoute");
 };
 /** "Amazon Bedrock route" / "openrouter route" / "Unknown route". */
 export const providerRoute = (provider: string | null | undefined) => {
-  const label = providerLabel(provider);
-  return label === "Unknown route" ? label : `${label} route`;
+  if (isUnknownProvider(provider)) return t("metric.unknownRoute");
+  return t("metric.providerRoute", { provider: providerLabel(provider) });
 };
 const SUBAGENT_METRIC_VERSION = "claude-observed-subagent-turn-v1";
 export type MeasurementKind = "turn" | "subagent" | "workTurn";
@@ -198,44 +203,41 @@ export const measurementKind = (m: Metric): MeasurementKind =>
       : "turn";
 /** Short chip shown next to a model; null for the default whole-turn measurement. */
 export const measurementChip = (m: Metric) =>
-  ({ turn: null, subagent: "Subagent", workTurn: "Work turn" })[
-    measurementKind(m)
-  ];
+  ({
+    turn: null,
+    subagent: t("metric.chipSubagent"),
+    workTurn: t("metric.chipWorkTurn"),
+  })[measurementKind(m)];
 /** Vocabulary name of the number ("Turn speed", never streaming speed). */
 export const measurementTitle = (m: Metric) =>
   ({
-    turn: "Turn speed",
-    subagent: "Subagent turn speed",
-    workTurn: "Work-turn speed",
+    turn: t("metric.turnSpeed"),
+    subagent: t("metric.subagentTurnSpeed"),
+    workTurn: t("metric.workTurnSpeed"),
   })[measurementKind(m)];
 /** One-line definition shown next to a turn-speed readout. */
 export const measurementDefinition = (m: Metric | undefined) =>
   ({
-    turn: "Whole turn, including tools and waiting.",
-    subagent:
-      "Subagent task prompt to final answer, including tools and waiting.",
-    workTurn:
-      "Whole work turn, including nested subagent output, tools and waiting.",
+    turn: t("metric.defTurn"),
+    subagent: t("metric.defSubagent"),
+    workTurn: t("metric.defWorkTurn"),
   })[m ? measurementKind(m) : "turn"];
 /** Vocabulary name of the measurement ("Turn speed"); precise definitions live in the explanation. */
 export const measurementLabel = measurementTitle;
 const TURN_EXPLANATIONS: Record<string, string> = {
-  antigravity: "Prompt through final answer of one agent run, including tools & waiting.",
-  opencode: "Prompt through final answer, including tools & waiting.",
-  "kimi-code": "Prompt through final answer, including tools & waiting.",
+  antigravity: "metric.explAntigravity",
+  opencode: "metric.explOpencode",
+  "kimi-code": "metric.explKimi",
 };
 /** Precise definition for the ⓘ explanation and group header tooltips. */
 export const measurementExplanation = (m: Metric) =>
   ({
     turn:
       client(m) === "claude-code"
-        ? "Human prompt through the terminal response in the primary transcript, including tools and waiting."
-        : (TURN_EXPLANATIONS[client(m)] ??
-          "Completed Codex turn: output tokens divided by the whole turn, including tools, reasoning and waiting."),
-    subagent:
-      "Subagent task prompt to final answer, including tools and waiting.",
-    workTurn:
-      "Matched Grok Build work turn, including nested agent output, tools and waiting.",
+        ? t("metric.explClaude")
+        : t(TURN_EXPLANATIONS[client(m)] ?? "metric.explCodex"),
+    subagent: t("metric.explSubagent"),
+    workTurn: t("metric.explWorkTurn"),
   })[measurementKind(m)];
 /** Same coding tool, metric version and source kind: the only values that may share a scale. */
 export const measurementGroupKey = (m: Metric) =>
@@ -251,7 +253,9 @@ export function niceScaleMax(largest: number | null | undefined): number {
   return step ?? Math.ceil(target / 250) * 250;
 }
 export const label = (m: Metric) =>
-  `${m.model ?? "Unknown model"} · ${m.reasoningEffort ?? "unknown"} effort · ${clientLabel(m)} ${m.clientVersion ?? "version unknown"}`;
+  `${m.model ?? t("metric.unknownModel")} · ${
+    m.reasoningEffort ? t("common.effort", { effort: m.reasoningEffort }) : t("common.unknownEffort")
+  } · ${clientLabel(m)} ${m.clientVersion ?? t("metric.versionUnknown")}`;
 export const communityId = (m: Metric) =>
   JSON.stringify([
     m.model ?? "unknown",
@@ -346,19 +350,19 @@ export function signal(
     baseline = period(eligible, now - 7 * DAY, now - DAY);
   const days = new Set(baseline.map((m) => m.completedAt.slice(0, 10))).size;
   if (current.length < 5 || baseline.length < 20 || days < 2)
-    return "More observations needed for a personal baseline";
+    return t("metric.baselineMore");
   if (!current.some((m) => Date.parse(m.completedAt) >= now - 3600000))
-    return "Recent observations are stale";
+    return t("metric.baselineStale");
   const a = summarize(current)[metric].median,
     b = summarize(baseline)[metric].median;
-  if (a === null || b === null || b <= 0) return "Baseline unavailable";
+  if (a === null || b === null || b <= 0) return t("metric.baselineUnavailable");
   const changed =
     metric === "throughput" ? a <= b * 0.7 : a >= b * 1.5 && a - b >= 1;
   return changed
     ? metric === "throughput"
-      ? "Lower throughput than your baseline"
-      : "Longer first-token waits than your baseline"
-    : "No threshold crossing in your observations";
+      ? t("metric.lowerThroughput")
+      : t("metric.longerFirstToken")
+    : t("metric.noThreshold");
 }
 /** The chart's time slots: 24 hourly slots for 24 h, 28 six-hour slots for 7 d. */
 export function bucketRanges(now: number, days: number) {
@@ -413,14 +417,14 @@ export function deltaVsMedian(
 /** "just now", "5 min ago", "3 h ago", "yesterday", "4 d ago" (same rules as the Mac app). */
 export function relativeTime(at: number, now: number): string {
   const seconds = (now - at) / 1000;
-  if (!Number.isFinite(seconds)) return "Unavailable";
-  if (seconds < 45) return "just now";
+  if (!Number.isFinite(seconds)) return t("common.unavailable");
+  if (seconds < 45) return t("metric.relativeNow");
   const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${Math.max(1, minutes)} min ago`;
+  if (minutes < 60) return t("metric.minAgo", { count: Math.max(1, minutes) });
   const hours = Math.floor(seconds / 3600);
-  if (hours < 24) return `${hours} h ago`;
+  if (hours < 24) return t("metric.hoursAgo", { count: hours });
   const days = Math.floor(seconds / 86400);
-  return days === 1 ? "yesterday" : `${days} d ago`;
+  return days === 1 ? t("metric.yesterday") : t("metric.daysAgo", { count: days });
 }
 export interface CohortRow {
   key: string;
@@ -471,12 +475,12 @@ export function cohortRows(
       const parts: string[] = [];
       if (versions.size > 1)
         parts.push(
-          row.sample.clientVersion ? `v${row.sample.clientVersion}` : "version unknown",
+          row.sample.clientVersion ? `v${row.sample.clientVersion}` : t("metric.versionUnknown"),
         );
       if (providers.size > 1)
         parts.push(
-          providerLabel(row.sample.provider) === "Unknown route"
-            ? "provider unknown"
+          isUnknownProvider(row.sample.provider)
+            ? t("metric.providerUnknown")
             : providerLabel(row.sample.provider),
         );
       if (!parts.length) parts.push(`parser ${parserVersion(row.sample)}`);
