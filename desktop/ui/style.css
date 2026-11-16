@@ -1310,6 +1310,20 @@ time,
   justify-content: space-between;
   gap: 12px;
 }
+/* The language options never wrap: they read as two fixed labels. On a narrow flyout they move
+   under the hint instead of squeezing the text. */
+.language-row {
+  align-items: center;
+}
+.language-row .segmented {
+  flex-shrink: 0;
+}
+@media (max-width: 380px) {
+  .language-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 .switch-label {
   font-weight: 600;
 }
@@ -1362,6 +1376,7 @@ time,
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .link-list {
   display: flex;
