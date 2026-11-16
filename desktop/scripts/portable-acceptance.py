@@ -284,7 +284,7 @@ def check_06_codex(exe: Path | None) -> Check:
             except OSError:
                 pass
     check.status = PASS if readable else SKIP
-    check.detail = "；".join(found) + (".可读取。" if readable else "。没有可读的会话目录，请先运行一次 Codex 生成日志。")
+    check.detail = "；".join(found) + ("。可读取。" if readable else "。没有可读的会话目录，请先运行一次 Codex 生成日志。")
     check.evidence.extend(found)
     if exe is None:
         check.status = SKIP
