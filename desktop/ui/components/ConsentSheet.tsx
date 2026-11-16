@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useI18n } from "../i18n";
 import { useAppStore } from "./primitives";
 import { SharingChoice } from "./SharingChoice";
 
@@ -9,6 +10,8 @@ import { SharingChoice } from "./SharingChoice";
  */
 export function ConsentSheet() {
   const store = useAppStore();
+  // Subscribing keeps the close label in the language the rest of the sheet is drawn in.
+  const { t } = useI18n();
   const card = useRef<HTMLElement>(null);
   // Captured while rendering: child effects focus the heading before this component's effect runs.
   const [opener] = useState(() => document.activeElement);
@@ -63,7 +66,7 @@ export function ConsentSheet() {
         <button
           type="button"
           className="icon-button sheet-close"
-          aria-label="Close without sharing"
+          aria-label={t("sheet.close")}
           onClick={close}
         >
           <X size={20} aria-hidden="true" />
