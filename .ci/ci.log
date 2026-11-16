@@ -1,0 +1,1568 @@
+# Tokrate-CN portable build
+event: push
+ref: refs/heads/main
+sha: c7cdd0b5eeedda6abb75b6a7c2d0959922ff53a3
+run: 43911136270 attempt 1
+runner: Windows X64
+v22.23.4
+10.9.9
+cargo 1.100.0 (3acc79c0c 2026-11-05)
+rustc 1.100.0 (0ef1bc386 2026-11-09)
+Python 3.12.10
+WebView2 runtime detected: 156.0.4314.58
+
+added 144 packages, and audited 145 packages in 7s
+
+29 packages are looking for funding
+  run `npm fund` for details
+
+5 vulnerabilities (1 moderate, 2 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+> tokrate-desktop@0.1.31 test
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mD:/a/tokrate-clients-c/tokrate-clients-c/desktop[39m
+
+ [32m✓[39m ui/model/provider-errors.test.ts [2m([22m[2m41 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m ui/model/dashboard.test.ts [2m([22m[2m50 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m ui/metrics.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m ui/store/store.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 271[2mms[22m[39m
+ [32m✓[39m ui/App.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 1513[2mms[22m[39m
+ [32m✓[39m ui/efficiency.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m ui/response.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m ui/model/picker.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+[90mstderr[2m | ui/i18n/i18n.test.ts[2m > [22m[2mtranslation[2m > [22m[2mfalls back to English when Chinese lacks a key
+[22m[39m[i18n] falling back to English for: test.onlyEnglish
+
+[90mstderr[2m | ui/i18n/i18n.test.ts[2m > [22m[2mtranslation[2m > [22m[2mreturns the key itself when neither dictionary has it
+[22m[39m[i18n] missing key: test.missing.key
+
+ [32m✓[39m ui/i18n/i18n.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m ui/components/tool-branding.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m ui/components/language.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 198[2mms[22m[39m
+ [32m✓[39m ui/components/Trend.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m ui/async-gate.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m      Tests [22m [1m[32m218 passed[39m[22m[90m (218)[39m
+[2m   Start at [22m 16:46:57
+[2m   Duration [22m 6.42s[2m (transform 607ms, setup 335ms, collect 1.75s, tests 2.18s, environment 10.99s, prepare 1.07s)[22m
+
+
+> tokrate-desktop@0.1.31 build
+> tsc --noEmit && vite build
+
+[36mvite v7.3.6 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 1950 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.46 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[35massets/index-Bp5Rmdpo.css  [39m[1m[2m 24.41 kB[22m[1m[22m[2m │ gzip:   5.53 kB[22m
+[2mdist/[22m[36massets/index-bQJ8wvFb.js   [39m[1m[2m413.73 kB[22m[1m[22m[2m │ gzip: 125.78 kB[22m
+[32m✓ built in 2.28s[39m
+[1m[92m    Updating[0m crates.io index
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m cfg-if v1.0.5
+[1m[92m  Downloaded[0m curve25519-dalek-derive v0.1.1
+[1m[92m  Downloaded[0m autocfg v1.5.1
+[1m[92m  Downloaded[0m ppv-lite86 v0.2.21
+[1m[92m  Downloaded[0m fallible-streaming-iterator v0.1.9
+[1m[92m  Downloaded[0m itoa v1.0.18
+[1m[92m  Downloaded[0m block-buffer v0.10.4
+[1m[92m  Downloaded[0m rustc_version v0.4.1
+[1m[92m  Downloaded[0m version_check v0.9.5
+[1m[92m  Downloaded[0m subtle v2.6.1
+[1m[92m  Downloaded[0m rand_chacha v0.3.1
+[1m[92m  Downloaded[0m crypto-common v0.1.7
+[1m[92m  Downloaded[0m signature v2.2.0
+[1m[92m  Downloaded[0m shlex v2.0.1
+[1m[92m  Downloaded[0m cpufeatures v0.2.17
+[1m[92m  Downloaded[0m rand_core v0.6.4
+[1m[92m  Downloaded[0m fallible-iterator v0.3.0
+[1m[92m  Downloaded[0m generic-array v0.14.7
+[1m[92m  Downloaded[0m pkcs8 v0.10.2
+[1m[92m  Downloaded[0m pkg-config v0.3.34
+[1m[92m  Downloaded[0m zeroize v1.9.0
+[1m[92m  Downloaded[0m digest v0.10.7
+[1m[92m  Downloaded[0m foldhash v0.2.0
+[1m[92m  Downloaded[0m windows-link v0.2.1
+[1m[92m  Downloaded[0m ed25519 v2.2.3
+[1m[92m  Downloaded[0m base64ct v1.8.3
+[1m[92m  Downloaded[0m zmij v1.0.23
+[1m[92m  Downloaded[0m bitflags v2.13.2
+[1m[92m  Downloaded[0m quote v1.0.47
+[1m[92m  Downloaded[0m sha2 v0.10.9
+[1m[92m  Downloaded[0m spki v0.7.3
+[1m[92m  Downloaded[0m semver v1.0.28
+[1m[92m  Downloaded[0m unicode-ident v1.0.26
+[1m[92m  Downloaded[0m once_cell v1.21.4
+[1m[92m  Downloaded[0m getrandom v0.2.17
+[1m[92m  Downloaded[0m hashlink v0.12.2
+[1m[92m  Downloaded[0m find-msvc-tools v0.1.14
+[1m[92m  Downloaded[0m smallvec v1.16.2
+[1m[92m  Downloaded[0m fastrand v2.5.0
+[1m[92m  Downloaded[0m const-oid v0.9.6
+[1m[92m  Downloaded[0m serde_core v1.0.229
+[1m[92m  Downloaded[0m getrandom v0.4.3
+[1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m proc-macro2 v1.0.107
+[1m[92m  Downloaded[0m tempfile v3.27.0
+[1m[92m  Downloaded[0m serde_derive v1.0.229
+[1m[92m  Downloaded[0m uuid v1.27.0
+[1m[92m  Downloaded[0m base64 v0.22.1
+[1m[92m  Downloaded[0m der v0.7.10
+[1m[92m  Downloaded[0m serde v1.0.229
+[1m[92m  Downloaded[0m rand v0.8.8
+[1m[92m  Downloaded[0m ed25519-dalek v2.2.0
+[1m[92m  Downloaded[0m cc v1.6.0
+[1m[92m  Downloaded[0m memchr v2.8.3
+[1m[92m  Downloaded[0m typenum v1.20.1
+[1m[92m  Downloaded[0m serde_json v1.0.151
+[1m[92m  Downloaded[0m rusqlite v0.40.2
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m vcpkg v0.2.15
+[1m[92m  Downloaded[0m chrono v0.4.45
+[1m[92m  Downloaded[0m zerocopy v0.8.61
+[1m[92m  Downloaded[0m curve25519-dalek v4.1.3
+[1m[92m  Downloaded[0m syn v2.0.119
+[1m[92m  Downloaded[0m syn v3.0.6
+[1m[92m  Downloaded[0m windows-sys v0.61.2
+[1m[92m  Downloaded[0m libsqlite3-sys v0.38.2
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m unicode-ident v1.0.26
+[1m[92m   Compiling[0m cfg-if v1.0.5
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m typenum v1.20.1
+[1m[92m   Compiling[0m generic-array v0.14.7
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m semver v1.0.28
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m find-msvc-tools v0.1.14
+[1m[92m   Compiling[0m zerocopy v0.8.61
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m cc v1.6.0
+[1m[92m   Compiling[0m rustc_version v0.4.1
+[1m[92m   Compiling[0m pkg-config v0.3.34
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m vcpkg v0.2.15
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m curve25519-dalek v4.1.3
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m syn v2.0.119
+[1m[92m   Compiling[0m libsqlite3-sys v0.38.2
+[1m[92m   Compiling[0m syn v3.0.6
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m windows-link v0.2.1
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m foldhash v0.2.0
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m rand_core v0.6.4
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m zeroize v1.9.0
+[1m[92m   Compiling[0m signature v2.2.0
+[1m[92m   Compiling[0m ed25519 v2.2.3
+[1m[92m   Compiling[0m rand_chacha v0.3.1
+[1m[92m   Compiling[0m hashlink v0.12.2
+[1m[92m   Compiling[0m windows-sys v0.61.2
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m fallible-streaming-iterator v0.1.9
+[1m[92m   Compiling[0m fallible-iterator v0.3.0
+[1m[92m   Compiling[0m smallvec v1.16.2
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m ed25519-dalek v2.2.0
+[1m[92m   Compiling[0m chrono v0.4.45
+[1m[92m   Compiling[0m rand v0.8.8
+[1m[92m   Compiling[0m uuid v1.27.0
+[1m[92m   Compiling[0m rusqlite v0.40.2
+[1m[92m   Compiling[0m base64 v0.22.1
+[1m[92m   Compiling[0m tokrate-core v0.1.31 (D:\a\tokrate-clients-c\tokrate-clients-c\desktop\core)
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 26.94s
+[1m[92m     Running[0m unittests src\lib.rs (desktop\core\target\debug\build\tokrate-core/ca34a1619b6696c8\out\tokrate_core-ca34a1619b6696c8.exe)
+
+running 403 tests
+test antigravity_tests::a_finished_execution_becomes_one_turn_with_exact_values ... ok
+test antigravity_tests::a_database_in_a_folder_with_spaces_is_read ... ok
+test antigravity_tests::a_call_without_a_generation_row_leaves_the_model_unknown ... ok
+test antigravity_tests::an_absent_execution_state_is_zero_and_never_emitted ... ok
+test antigravity_tests::an_execution_id_in_two_executor_rows_is_ambiguous ... ok
+test antigravity_tests::a_read_is_skipped_once_its_blobs_exceed_the_byte_budget ... ok
+test antigravity_tests::a_new_database_is_found_when_reported_and_otherwise_by_the_five_minute_safety_net ... ok
+test antigravity_tests::database_uri_is_percent_encoded_read_only_and_never_immutable ... ok
+test antigravity_tests::antigravity_turns_are_shared_only_with_final_delegated_output_and_the_google_provider ... ok
+test antigravity_tests::an_unfinished_execution_is_emitted_exactly_once_after_it_becomes_finished ... ok
+test antigravity_tests::databases_untouched_for_more_than_seven_days_are_not_opened ... ok
+test antigravity_tests::an_implausibly_fast_or_instant_turn_makes_no_record ... ok
+test antigravity_tests::known_generations_are_not_fetched_again_and_a_row_written_later_is_picked_up ... ok
+test antigravity_tests::live_responses_publish_once_and_only_for_calls_completed_after_the_monitor_started ... ok
+test antigravity_tests::executions_with_missing_or_inconsistent_timestamps_or_calls_are_skipped ... ok
+test antigravity_tests::live_responses_without_an_executor_have_no_effort_and_without_a_model_are_not_published ... ok
+test antigravity_tests::mixed_models_leave_model_effort_and_provider_unknown ... ok
+test antigravity_tests::malformed_blobs_are_skipped_without_panicking ... ok
+test antigravity_tests::non_gemini_variants_have_unknown_effort_and_provider ... ok
+test antigravity_tests::google_needs_a_gemini_model_and_a_false_non_gemini_flag_on_every_generation ... ok
+test antigravity_tests::only_a_conversation_database_change_wakes_a_poll ... ok
+test antigravity_tests::prompt_cache_sums_uncached_and_cache_read_input_with_absent_counts_as_zero ... ok
+test antigravity_tests::protobuf_reads_every_wire_type_nested_messages_and_repeated_fields ... ok
+test antigravity_tests::protobuf_rejects_truncated_grouped_reserved_and_overlong_input ... ok
+test antigravity_tests::only_qualifying_model_calls_count_as_responses ... ok
+test antigravity_tests::reading_leaves_the_database_byte_identical_and_decodes_the_field_map ... ok
+test antigravity_tests::several_executions_of_one_conversation_are_separate_turns_with_their_own_steps ... ok
+test antigravity_tests::source_monitor_polls_antigravity_under_its_own_root_and_charges_a_bounded_budget ... ok
+test antigravity_tests::source_monitor_routes_changes_by_root_wakes_on_them_and_watches_only_the_conversation_folders ... ok
+test antigravity_tests::source_monitor_watches_only_t3_state_database_changes_for_claude_attribution ... ok
+test antigravity_tests::started_subagent_work_leaves_delegated_output_unattributed ... ok
+test antigravity_tests::source_monitor_watches_and_routes_the_explicit_t3_root_and_custom_roots_disable_it ... ok
+test antigravity_tests::strings_decoded_from_blobs_are_bounded ... ok
+test antigravity_tests::only_conversation_databases_of_the_three_folders_are_read_and_pb_files_are_ignored ... ok
+test antigravity_tests::effort_comes_only_from_a_known_suffix_of_the_variant ... ok
+test antigravity_tests::subagent_trajectories_are_not_measured ... ok
+test antigravity_tests::the_google_badge_is_matched_by_model_prefix_or_provider ... ok
+test antigravity_tests::the_subtrajectory_flag_is_read_without_loading_oversized_values ... ok
+test antigravity_tests::unreadable_database_retry_delay_doubles_up_to_five_minutes ... ok
+test antigravity_tests::t3_profile_changes_rescan_new_profiles_but_settings_and_auth_churn_are_ignored ... ok
+test antigravity_tests::the_deadline_is_now_for_deferred_reads_and_the_retry_time_for_a_failing_database ... ok
+test error_alerts_tests::a_block_only_alert_is_selected_like_any_other_and_keeps_its_count ... ok
+test error_alerts_tests::a_failure_in_the_last_hour_puts_the_alert_first_and_counts_the_others ... ok
+test error_alerts_tests::a_future_failure_or_turn_counts_as_recent ... ok
+test error_alerts_tests::a_throttle_only_alert_is_selected_like_any_other_and_keeps_its_count ... ok
+test error_alerts_tests::at_most_twenty_alerts_are_read ... ok
+test error_alerts_tests::only_models_used_in_the_last_seven_days_or_failed_in_the_last_24_hours_are_relevant ... ok
+test error_alerts_tests::the_same_model_from_two_providers_keeps_both_in_the_servers_order ... ok
+test error_alerts_tests::the_selection_serializes_for_the_webview ... ok
+test error_alerts_tests::the_users_own_report_alone_is_skipped ... ok
+test error_notifications_tests::a_baseline_posts_nothing_so_it_leaves_the_whole_cap_free ... ok
+test error_notifications_tests::a_new_alert_starts_an_episode_with_one_notification ... ok
+test error_notifications_tests::a_reappearance_within_the_window_continues_the_episode ... ok
+test error_notifications_tests::a_recovery_follows_only_for_a_model_whose_alert_is_gone_for_good ... ok
+test error_notifications_tests::a_recovery_the_cap_suppresses_is_dropped_not_postponed ... ok
+test error_notifications_tests::a_suppressed_start_suppresses_its_recovery ... ok
+test error_notifications_tests::alerts_present_at_the_first_board_count_as_notified_without_posting ... ok
+test error_notifications_tests::an_alert_back_after_boards_were_missing_for_the_whole_window_starts_a_new_episode ... ok
+test error_notifications_tests::an_episode_ends_after_thirty_minutes_without_the_alert_and_not_before ... ok
+test error_notifications_tests::at_most_three_notifications_per_hour_in_total ... ok
+test error_notifications_tests::every_model_has_its_own_episode ... ok
+test error_notifications_tests::reset_forgets_episodes_and_takes_the_next_board_as_the_baseline ... ok
+test error_notifications_tests::reset_keeps_the_hours_notifications_so_switching_cannot_get_around_the_cap ... ok
+test error_notifications_tests::the_recovery_text ... ok
+test error_notifications_tests::the_start_text_for_a_failure_of_the_users_own ... ok
+test error_notifications_tests::the_start_text_for_the_reports_of_contributors ... ok
+test kimi_tests::a_failed_or_unfinished_subagent_turn_is_discarded_work ... ok
+test kimi_tests::a_failed_step_anywhere_in_the_turn_discards_it ... ok
+test kimi_tests::a_failure_after_the_first_end_turn_does_not_affect_the_emitted_turn ... ok
+test kimi_tests::a_file_read_to_its_end_is_checkpointed_and_not_read_again ... ok
+test kimi_tests::a_kimi_failure_needs_the_request_of_its_own_step_on_moonshot ... ok
+test kimi_tests::a_kimi_sample_is_shared_only_for_moonshot_or_unknown_without_a_cache_write ... ok
+test kimi_tests::a_main_turn_reports_itself_for_attribution_with_the_session_as_root ... ok
+test kimi_tests::a_missing_home_is_not_an_error ... ok
+test kimi_tests::a_model_must_be_a_safe_identifier ... ok
+test kimi_tests::a_request_belongs_to_the_open_step_it_names ... ok
+test kimi_tests::a_retried_call_uses_the_latest_request ... ok
+test kimi_tests::a_step_of_another_turn_does_not_delay_or_repeat_a_completed_turn ... ok
+test kimi_tests::a_step_that_never_ended_while_another_began_fails_the_turn ... ok
+test kimi_tests::a_step_without_a_request_cannot_be_measured ... ok
+test kimi_tests::a_subagent_log_reports_delegated_work_and_no_metric_or_live_response ... ok
+test kimi_tests::a_system_triggered_turn_is_unmeasured_but_its_steps_are_still_live_responses ... ok
+test kimi_tests::a_tail_that_starts_inside_a_turn_measures_none_of_it_but_a_replay_measures_it ... ok
+test kimi_tests::a_turn_between_steps_is_discarded_when_another_turn_begins ... ok
+test kimi_tests::a_turn_completes_and_is_emitted_at_its_first_end_turn ... ok
+test kimi_tests::a_turn_must_last_and_stay_below_two_thousand_tokens_per_second ... ok
+test kimi_tests::a_turn_that_is_still_running_is_not_emitted ... ok
+test kimi_tests::a_turn_that_never_ended_a_step_is_discarded_when_another_turn_begins ... ok
+test kimi_tests::a_turn_whose_first_observed_step_is_not_step_one_is_not_measured ... ok
+test kimi_tests::an_aborted_prompt_discards_only_a_turn_that_is_still_open ... ok
+test kimi_tests::every_failing_finish_reason_discards_the_turn_and_is_no_live_response ... ok
+test kimi_tests::every_prompt_kind_counts_in_a_subagent_log_but_the_step_must_still_be_the_first ... ok
+test kimi_tests::kimi_failures_are_the_turn_errors_of_the_providers_side_counted_once ... ok
+test kimi_tests::kimi_provider_is_moonshot_and_any_other_is_unknown ... ok
+test kimi_tests::kimi_successful_steps_count_before_the_response_filter_and_retries_not_at_all ... ok
+test kimi_tests::live_responses_come_from_unmeasured_and_discarded_turns_too ... ok
+test kimi_tests::live_responses_follow_the_response_rules ... ok
+test kimi_tests::main_and_subagent_monitors_split_the_wire_logs_by_agent_folder ... ok
+test kimi_tests::malformed_lines_and_unknown_records_are_skipped ... ok
+test kimi_tests::missing_or_invalid_usage_fails_the_step ... ok
+test kimi_tests::no_qualifying_step_leaves_the_response_fields_absent ... ok
+test kimi_tests::only_the_shared_reasoning_efforts_are_kept ... ok
+test kimi_tests::only_user_prompts_start_measured_turns ... ok
+test kimi_tests::other_end_values_and_other_turns_are_ignored ... ok
+test kimi_tests::protocol_1_3_logs_without_requests_and_cli_failed_turns_produce_nothing ... ok
+test kimi_tests::records_without_a_finite_integer_time_are_ignored ... ok
+test kimi_tests::steps_after_the_first_end_turn_belong_to_no_measured_turn ... ok
+test kimi_tests::steps_sum_into_the_turn_and_only_qualifying_steps_are_responses ... ok
+test kimi_tests::steps_that_disagree_leave_model_effort_and_provider_unknown ... ok
+test kimi_tests::subagent_output_is_attributed_to_the_main_turn_that_started_it ... ok
+test kimi_tests::the_cache_creation_count_is_part_of_the_input_but_no_cache_write_is_reported ... ok
+test antigravity_tests::unreadable_databases_are_skipped_and_retried_when_they_change ... ok
+test kimi_tests::the_kimi_code_tool_can_be_selected ... ok
+test kimi_tests::the_latest_prompt_starts_the_turn_and_a_started_turn_clears_it ... ok
+test kimi_tests::the_moonshot_badge_follows_the_provider_or_the_model_family ... ok
+test antigravity_tests::write_ahead_log_content_is_read_and_a_log_change_triggers_a_reread ... ok
+test kimi_tests::the_command_line_home_has_the_cli_surface ... ok
+test kimi_tests::the_session_and_agent_come_from_the_log_path ... ok
+test kimi_tests::the_real_capacity_failure_has_no_turn_but_its_nine_steps_are_live_responses ... ok
+test kimi_tests::the_turn_id_may_be_a_number_in_end_records_and_a_string_in_steps ... ok
+test kimi_tests::turn_end_records_discard_the_turn ... ok
+test kimi_tests::wire_paths_have_one_exact_layout ... ok
+test kimi_tests::the_real_desktop_log_of_two_steps_is_one_turn_with_one_response ... ok
+test kimi_tests::title_sessions_are_ignored_entirely ... ok
+test opencode_tests::a_complete_multi_step_turn_has_exact_values ... ok
+test opencode_tests::a_database_in_a_folder_with_spaces_is_read ... ok
+test opencode_tests::a_new_session_named_by_a_later_message_is_looked_up ... ok
+test opencode_tests::a_full_reread_every_five_minutes_drops_messages_opencode_deleted ... ok
+test antigravity_tests::t3_profiles_are_opt_in_bounded_to_direct_hash_profiles_and_report_other_surface ... ok
+test opencode_tests::a_failed_message_means_no_turn ... ok
+test opencode_tests::a_turn_re_emitted_with_its_delegated_total_replaces_the_pending_one_in_history_and_is_shared_once ... ok
+test opencode_tests::an_ancestor_shared_by_many_sessions_is_asked_for_once ... ok
+test opencode_tests::a_turn_ending_in_tool_calls_is_emitted_once_it_completes_with_stop ... ok
+test opencode_tests::a_user_message_without_answers_and_other_roles_are_ignored ... ok
+test opencode_tests::an_interrupted_turn_is_never_emitted ... ok
+test opencode_tests::an_unreadable_database_is_retried_with_a_growing_delay ... ok
+test opencode_tests::ancestor_lookups_find_every_chain_and_stay_within_the_read_limits ... ok
+test opencode_tests::deadlines_are_a_waiting_read_the_retry_time_and_the_delegation_settle ... ok
+test opencode_tests::ids_and_values_over_their_limit_never_leave_sqlite ... ok
+test opencode_tests::implausibly_fast_or_instant_turns_are_not_emitted ... ok
+test opencode_tests::later_reads_merge_updated_messages_and_never_emit_a_turn_twice ... ok
+test opencode_tests::messages_older_than_the_retention_are_not_read ... ok
+test opencode_tests::live_responses_publish_once_for_primary_sessions_and_only_after_the_monitor_started ... ok
+test opencode_tests::invalid_token_counts_make_the_message_and_so_the_turn_unmeasurable ... ok
+test opencode_tests::mixed_models_providers_and_efforts_leave_them_unknown ... ok
+test opencode_tests::only_opencode_db_is_read_not_the_legacy_storage_folder_or_other_files ... ok
+test opencode_tests::a_read_stops_at_its_byte_budget_and_keeps_the_newest_messages ... ok
+test opencode_tests::only_qualifying_steps_count_as_responses ... ok
+test opencode_tests::reading_never_changes_the_database_and_sees_write_ahead_log_content ... ok
+test opencode_tests::only_the_database_and_its_log_wake_a_poll ... ok
+test opencode_tests::request_outcomes_count_completed_calls_and_provider_side_api_errors_only ... ok
+test opencode_tests::prompt_cache_needs_both_counts_and_writes_are_anthropic_only ... ok
+test opencode_tests::several_turns_of_one_session_are_separate_and_a_follow_up_message_is_its_own_turn ... ok
+test opencode_tests::only_a_shared_effort_variant_is_an_effort ... ok
+test opencode_tests::source_monitor_polls_opencode_under_its_own_root_with_a_bounded_budget ... ok
+test opencode_tests::source_monitor_wakes_on_the_opencode_database_only_and_watches_its_folder_shallowly ... ok
+test opencode_tests::the_queries_select_only_listed_json_paths_and_never_the_part_table ... ok
+test opencode_tests::subagent_sessions_below_the_version_floor_add_no_delegated_output ... ok
+test opencode_tests::subagent_sessions_produce_no_turn_and_their_output_is_delegated_to_the_primary_turn ... ok
+test outcome_tests::a_claude_failure_without_an_earlier_real_response_has_no_model_and_is_dropped ... ok
+test outcome_tests::a_claude_mid_stream_failure_counts_the_partial_response_and_the_failure ... ok
+test outcome_tests::a_claude_subagent_failure_uses_the_responses_of_its_own_file ... ok
+test outcome_tests::a_full_queue_drops_the_oldest_entries_and_has_its_own_cap ... ok
+test outcome_tests::a_group_looked_at_late_still_leaves_in_the_slot_of_its_due_time ... ok
+test outcome_tests::a_late_outcome_starts_a_new_entry_in_its_shifted_slot ... ok
+test outcome_tests::a_request_needs_an_item_and_at_most_50_of_each_list ... ok
+test outcome_tests::a_request_with_only_counts_is_a_signed_version_2_envelope_with_both_lists ... ok
+test outcome_tests::acknowledging_a_batch_removes_its_samples_and_entries_only ... ok
+test outcome_tests::an_outcome_first_seen_exactly_at_close_grace_keeps_its_original_due_time ... ok
+test outcome_tests::an_outcome_is_counted_once_however_often_it_is_read ... ok
+test outcome_tests::an_upload_batch_always_fits_the_request_size_limit ... ok
+test outcome_tests::blocked_outcomes_are_summed_split_and_always_sent_like_the_other_counts ... ok
+test outcome_tests::claude_failures_that_are_not_the_providers_are_dropped ... ok
+test outcome_tests::claude_overload_and_server_errors_are_attributed_to_the_previous_real_response ... ok
+test outcome_tests::claude_provider_comes_from_the_response_evidence_and_unknown_routes_are_dropped ... ok
+test outcome_tests::claude_retries_are_never_counted ... ok
+test outcome_tests::claude_successes_count_before_the_response_speed_filter ... ok
+test outcome_tests::codex_failures_are_dated_by_the_completion_and_keyed_by_their_turn ... ok
+test outcome_tests::codex_failures_follow_the_error_enum_and_status ... ok
+test outcome_tests::codex_older_than_0_145_unknown_versions_and_other_providers_report_nothing ... ok
+test outcome_tests::codex_outcomes_need_one_known_model ... ok
+test outcome_tests::codex_review_sessions_report_no_outcomes ... ok
+test outcome_tests::codex_successes_are_distinct_token_usage_records_including_short_ones ... ok
+test outcome_tests::codex_throttling_needs_a_fresh_snapshot_with_every_window_below_95_percent ... ok
+test outcome_tests::codex_too_many_requests_with_quota_left_is_throttled_and_keeps_the_plan_percentage ... ok
+test outcome_tests::counts_over_10000_are_split_into_entries_that_each_sum_to_at_least_one ... ok
+test outcome_tests::disabling_sharing_clears_every_pending_count_and_forgets_what_was_seen ... ok
+test outcome_tests::error_text_never_reaches_an_outcome ... ok
+test outcome_tests::late_outcomes_aggregate_until_their_shifted_slot_flushes ... ok
+test outcome_tests::only_outcomes_after_the_consent_started_and_not_in_the_future_count ... ok
+test outcome_tests::only_shareable_outcomes_are_counted_and_the_rest_is_dropped ... ok
+test outcome_tests::outcomes_are_summed_per_bucket_and_queued_after_its_close_grace ... ok
+test outcome_tests::request_counts_and_samples_of_one_slot_share_one_delay_and_one_request ... ok
+test outcome_tests::request_counts_older_than_24_hours_are_dropped_unsent ... ok
+test outcome_tests::t3_codex_outcomes_keep_native_dedupe_identity ... ok
+test outcome_tests::the_snapshot_belongs_to_its_rollout_and_never_outlives_a_reset ... ok
+test opencode_tests::unfinished_delegated_work_stops_blocking_thirty_minutes_after_the_turn_ended ... ok
+test outcome_tests::the_source_monitor_carries_outcomes_apart_from_turns_and_never_twice ... ok
+test prompt_size::tests::missing_conflicting_overflow_and_inconsistent_coverage_are_unavailable ... ok
+test prompt_size::tests::oversized_bin_totals_are_rejected ... ok
+test prompt_size::tests::request_tracking_stops_at_the_bound ... ok
+test prompt_size::tests::tracker_buckets_boundaries_and_reconciles_cache_inclusive_input ... ok
+test prompt_size::tests::validator_rejects_duplicate_noncanonical_and_impossible_bins ... ok
+test provider_errors_tests::a_future_timestamp_counts_as_now ... ok
+test provider_errors_tests::an_outcome_seen_before_is_not_counted_again ... ok
+test provider_errors_tests::at_most_200_groups_are_kept_and_the_oldest_go_first ... ok
+test provider_errors_tests::blocked_failures_are_their_own_group_without_a_plan_percentage ... ok
+test provider_errors_tests::counts_and_latest_time_per_client_model_and_kind ... ok
+test provider_errors_tests::failures_expire_after_24_hours ... ok
+test provider_errors_tests::groups_are_ordered_most_recent_failure_first ... ok
+test provider_errors_tests::successes_are_ignored ... ok
+test outcome_tests::throttled_outcomes_are_summed_and_split_like_the_other_counts ... ok
+test provider_errors_tests::the_summary_serializes_without_any_error_text ... ok
+test provider_errors_tests::throttled_failures_are_their_own_group_and_keep_the_latest_plan_percentage ... ok
+test sharing::t3_contract_tests::only_the_native_t3_tuple_contracts_share_and_keep_their_semantics ... ok
+test sharing::t3_contract_tests::t3_request_outcomes_use_parser_specific_provider_allowlists ... ok
+test source_profile_tests::additional_roots_are_bounded_and_reject_duplicates_or_overlaps ... ok
+test provider_errors_tests::the_dedupe_memory_is_bounded ... ok
+test source_profile_tests::codex_profiles_deduplicate_identical_metric_ids ... ok
+test source_profile_tests::default_and_additional_profiles_collect_and_have_unique_watcher_routes ... ok
+test source_profile_tests::combined_checkpoints_resume_all_profiles_and_survive_missing_or_partial_profiles ... ok
+test source_profile_tests::profiles_share_codex_budget_fairly_and_remain_within_global_limit ... ok
+test t3_identity::tests::an_sdk_edge_block_is_a_blocked_outcome_of_t3_code ... ok
+test t3_identity::tests::active_windows_are_bounded_and_overlapping_windows_are_ambiguous ... ok
+test t3_identity::tests::sdk_turns_are_attributed_without_changing_native_identity_or_leaking_metadata ... ok
+test tests::a_capped_read_never_returns_more_than_the_cap_even_if_the_file_grew ... ok
+test tests::a_checkpoint_that_does_not_match_the_file_falls_back_to_a_full_read ... ok
+test tests::a_claude_monitor_polls_once_more_after_a_read_so_its_parser_can_close_a_waiting_turn ... ok
+test tests::a_completed_grok_turn_becomes_a_live_response_only_when_it_qualifies ... ok
+test tests::a_noted_new_file_is_discovered_and_excluded_paths_are_ignored ... ok
+test tests::a_replayed_claude_turn_keeps_the_delegated_total_settled_before_the_checkpoint ... ok
+test tests::a_replayed_turn_keeps_the_delegated_total_settled_before_the_checkpoint ... ok
+test tests::a_reported_append_is_read_at_once_and_an_unreported_one_waits_for_the_safety_net ... ok
+test tests::a_rescan_request_triggers_discovery_of_files_nobody_reported ... ok
+test tests::a_sample_queued_exactly_on_a_boundary_takes_that_boundary ... ok
+test tests::a_sample_queued_long_after_its_period_leaves_at_the_next_boundary_plus_the_delay ... ok
+test tests::a_sample_waits_for_post_close_grace_and_its_slot_delay ... ok
+test tests::a_tiny_codex_check_in_never_wins_over_an_active_claude_session ... ok
+test tests::an_acknowledged_slot_keeps_its_jitter_for_later_samples ... ok
+test tests::an_empty_or_missing_root_is_not_walked_on_every_poll ... ok
+test tests::app_files_are_read_whole_only_when_regular_and_within_the_cap ... ok
+test tests::auto_selector_adopts_the_busiest_model_then_resists_flapping ... ok
+test tests::auto_selector_falls_back_when_nothing_is_live ... ok
+test tests::auto_selector_keeps_a_model_that_still_has_a_response_in_the_window ... ok
+test tests::auto_selector_restarts_the_lead_timer_when_the_leader_changes ... ok
+test tests::auto_selector_switches_at_once_when_the_active_model_went_quiet ... ok
+test tests::auto_selector_within_a_coding_tool_ignores_other_tools ... ok
+test tests::backlog_predicate_blocks_on_an_archive_only_when_the_live_tail_started_after_the_work ... ok
+test tests::backlog_predicate_ignores_files_modified_before_the_work_could_start ... ok
+test tests::checkpoints_keep_the_saved_set_while_a_primary_turn_waits_for_its_delegated_output ... ok
+test tests::claude_background_subagent_is_awaited_and_counted_when_it_finishes_after_the_parent ... ok
+test tests::claude_bedrock_region_comes_from_the_inference_profile_prefix ... ok
+test tests::claude_deferred_tools_record_does_not_start_a_response_it_precedes ... ok
+test tests::claude_deferred_tools_record_with_an_unknown_parent_falls_back_to_the_latest_user_record ... ok
+test tests::claude_discarded_subagent_work_is_not_counted_and_does_not_block_the_turn ... ok
+test tests::claude_discarded_turns_report_no_response_fields ... ok
+test tests::claude_entrypoints_map_to_surface_categories ... ok
+test tests::claude_fails_closed_for_interjections_model_or_effort_conflicts_and_sidechains ... ok
+test tests::claude_final_answer_that_starts_with_thinking_ends_at_its_last_record ... ok
+test tests::claude_flush_completes_a_tool_call_response_but_never_a_thinking_one ... ok
+test tests::claude_interjection_continues_one_turn_from_its_original_start ... ok
+test tests::claude_interjection_gap_over_thirty_minutes_starts_a_new_turn ... ok
+test tests::claude_interruption_discards_the_turn_and_does_not_start_one ... ok
+test tests::claude_meta_and_notification_records_are_request_triggers ... ok
+test tests::claude_meta_user_records_neither_start_nor_interrupt_turns ... ok
+test tests::claude_missing_or_later_parent_falls_back_to_the_latest_user_record ... ok
+test tests::claude_model_consistency_compares_normalized_names_across_routes ... ok
+test tests::claude_model_names_are_normalized_before_the_safe_identifier_check ... ok
+test tests::claude_monitors_measure_subagents_separately_and_primary_selection_excludes_them ... ok
+test tests::claude_notification_written_mid_response_does_not_move_its_start ... ok
+test tests::claude_other_attachments_remain_request_triggers ... ok
+test tests::claude_parser_started_mid_file_waits_for_a_turn_boundary ... ok
+test tests::claude_parsers_report_primary_turns_and_subagent_work_through_the_side_channel ... ok
+test tests::claude_pending_thinking_turn_survives_a_poll_boundary_until_text_or_the_timeout ... ok
+test tests::claude_primary_and_subagent_monitors_each_note_only_their_own_transcripts ... ok
+test tests::claude_prompt_cache_is_unreported_when_any_counted_message_lacks_a_field ... ok
+test tests::claude_prompt_cache_sums_unique_messages_and_takes_repeated_records_once ... ok
+test tests::claude_prompt_cache_takes_each_field_from_the_first_record_that_has_it ... ok
+test tests::claude_prompt_size_counts_short_messages_but_rejects_conflicting_usage ... ok
+test tests::claude_provider_comes_only_from_explicit_message_and_request_identifiers ... ok
+test tests::claude_provider_rejects_malformed_identifiers ... ok
+test t3_identity::tests::strong_claude_agent_windows_match_only_one_complete_sdk_span ... ok
+test tests::claude_replay_reader_closes_a_pending_terminal_turn_at_the_end_of_the_file ... ok
+test tests::claude_requires_primary_flags_complete_usage_and_monotonic_snapshots ... ok
+test tests::claude_response_ends_at_the_last_record_of_a_multi_block_message ... ok
+test tests::claude_response_starts_at_the_parent_record_of_its_first_assistant_record ... ok
+test tests::claude_responses_below_the_floor_over_the_cap_or_synthetic_never_qualify ... ok
+test tests::claude_responses_need_an_observed_trigger ... ok
+test tests::claude_subagent_coordinator_follow_ups_are_prompts_even_when_meta ... ok
+test tests::claude_subagent_parser_emits_distinct_subagent_metrics_and_each_prompt_is_a_turn ... ok
+test tests::claude_subagent_parser_rejects_unsafe_or_mismatched_agent_identity ... ok
+test tests::claude_subagent_provider_uses_the_same_evidence ... ok
+test tests::claude_subagent_responses_are_labelled_and_identified_apart ... ok
+test tests::claude_remembered_record_times_are_bounded_per_file ... ok
+test tests::claude_subagent_turns_report_prompt_cache_too ... ok
+test tests::claude_surface_comes_from_the_prompt_record_else_the_assistant_records ... ok
+test tests::claude_synthetic_messages_invalidate_the_turn_without_model_ambiguity ... ok
+test tests::claude_task_notifications_are_activity_never_prompts ... ok
+test tests::claude_terminal_turn_is_pending_and_same_message_records_update_it ... ok
+test tests::claude_tool_loop_responses_start_at_the_latest_user_record ... ok
+test tests::claude_tool_results_count_as_activity_for_long_tool_runs ... ok
+test tests::claude_transcript_deduplicates_api_messages_skips_tool_users_and_omits_content ... ok
+test tests::claude_subagent_that_ends_before_the_parent_is_counted_after_the_settle_time ... ok
+test tests::claude_turn_waiting_for_its_text_closes_at_the_next_record_or_when_flushed ... ok
+test tests::claude_turn_is_final_while_unrelated_older_subagent_history_is_still_replayed ... ok
+test tests::claude_turns_and_responses_above_the_speed_bound_are_not_emitted ... ok
+test tests::claude_turn_without_subagents_settles_to_zero ... ok
+test tests::claude_user_records_without_a_timestamp_are_ignored_entirely ... ok
+test tests::claude_turns_are_not_final_while_subagent_history_is_still_being_read ... ok
+test tests::claude_work_still_open_after_the_maximum_wait_is_ignored ... ok
+test tests::codex_child_sessions_report_work_only_and_other_agents_stay_skipped ... ok
+test tests::codex_originators_map_to_surface_categories ... ok
+test tests::codex_parser_requires_the_observed_turn_start ... ok
+test tests::codex_prompt_cache_comes_from_the_last_turn_token_usage_and_never_reports_a_write ... ok
+test tests::codex_prompt_sizes_count_short_responses_and_require_unique_complete_coverage ... ok
+test tests::codex_responses_skip_duplicates_agent_sessions_and_unobserved_starts ... ok
+test tests::codex_responses_use_the_per_response_usage_between_trigger_and_usage_record ... ok
+test tests::codex_surface_comes_from_the_originator_never_from_the_source ... ok
+test tests::claude_work_outside_the_turn_window_or_session_is_not_counted ... ok
+test tests::codex_turns_above_the_speed_bound_are_not_emitted ... ok
+test tests::codex_turns_without_qualifying_responses_report_none ... ok
+test tests::delegated_output_is_validated_and_null_for_every_source_kind_but_primary ... ok
+test tests::every_normally_settled_turn_of_a_period_leaves_in_the_same_slot ... ok
+test tests::codex_thread_spawn_children_attribute_to_their_root_session_turn ... ok
+test tests::grok_accepts_delayed_ledger_writes_but_enforces_persistence_chronology ... ok
+test tests::grok_detects_same_size_incomplete_to_complete_rewrite_with_unchanged_mtime ... ok
+test tests::grok_emits_completed_turn_once_even_if_usage_snapshot_later_changes ... ok
+test tests::grok_final_window_is_closed_by_turn_ended_and_a_new_loop_closes_the_previous_window ... ok
+test tests::grok_attributes_session_effort_only_when_observed_at_live_start_and_unchanged_at_emit ... ok
+test tests::grok_idle_polls_read_nothing_and_a_noted_change_is_serviced ... ok
+test tests::grok_joins_zero_based_event_turns_to_one_based_usage_ledger_turns ... ok
+test tests::grok_implausibly_fast_or_unwindowed_turns_have_no_response_timing ... ok
+test tests::grok_keeps_only_the_single_model_key_of_a_usage_row ... ok
+test tests::grok_model_call_count_must_match_the_usage_ledger_when_present ... ok
+test tests::grok_needs_at_least_the_response_minimum_output_tokens_per_model_call_on_average ... ok
+test tests::grok_nested_agents_keep_the_work_turn_but_have_no_response_timing ... ok
+test tests::grok_parser_v1_history_is_not_shared_by_this_version ... ok
+test tests::grok_real_shape_turn_reports_a_whole_turn_response_speed_over_all_model_calls ... ok
+test tests::grok_reconciles_a_snapshot_once_and_discovery_visits_every_session_once ... ok
+test tests::grok_prompt_cache_comes_from_the_ledger_row_and_never_reports_a_write ... ok
+test tests::grok_repeated_tool_started_events_in_one_call_do_not_extend_the_window ... ok
+test tests::grok_rejects_incomplete_cancelled_subagent_repeated_and_colliding_turns ... ok
+test tests::grok_turns_are_final_at_emission_with_zero_delegated_output ... ok
+test tests::grok_turns_carry_no_surface ... ok
+test tests::grok_requires_exact_session_binding_and_one_second_timestamp_tolerance ... ok
+test tests::grok_unknowns_legacy_or_ambiguous_model_breakdowns ... ok
+test tests::grok_windows_longer_than_the_response_limit_have_no_response_timing ... ok
+test tests::history_bounds_checkpoints_by_age_and_file_count ... ok
+test tests::history_keeps_a_settled_delegated_total_when_the_same_turn_arrives_without_one ... ok
+test tests::history_load_sanitizes_implausible_speeds_and_response_timing ... ok
+test tests::history_round_trips_checkpoints_and_loads_files_without_them ... ok
+test opencode_tests::sessions_below_the_version_floor_are_not_measured ... ok
+test tests::history_that_is_oversized_is_unreadable_and_a_missing_one_is_empty ... ok
+test tests::history_without_response_fields_still_decodes ... ok
+test tests::history_without_prompt_cache_fields_decodes_and_inconsistent_stored_sets_are_dropped ... ok
+test tests::idle_polls_open_no_caught_up_file ... ok
+test tests::ids_from_source_logs_are_kept_only_up_to_512_bytes ... ok
+test tests::launch_checkpoints_also_resume_claude_transcripts ... ok
+test tests::live_stream_keeps_new_qualifying_unique_responses_in_a_bounded_buffer ... ok
+test tests::live_value_averages_the_middle_pair_of_an_even_count ... ok
+test tests::live_value_is_the_median_of_the_last_five_responses_within_ten_minutes ... ok
+test tests::history_deduplicates_prunes_caps_and_persists_only_normalized_metrics ... ok
+test tests::monitor_live_responses_come_only_from_the_recent_tail_never_history_replay ... ok
+test tests::launch_checkpoints_skip_a_fully_read_file_and_a_later_append_still_resolves_the_model ... ok
+test tests::more_than_fifty_samples_of_one_period_follow_in_the_next_batch ... ok
+test tests::old_and_malformed_history_prompt_buckets_become_unavailable ... ok
+test tests::parser_rejects_subagents_ambiguous_models_and_invalid_counters ... ok
+test tests::parser_uses_latest_cumulative_tokens_and_keeps_effort_conflicts_unknown ... ok
+test tests::monitor_reads_an_old_caught_up_tail_only_after_the_watcher_reports_its_append ... ok
+test tests::prompt_cache_fields_are_consistent_or_all_none ... ok
+test tests::prompt_size_histogram_is_allowlisted_reconciled_and_never_sent_for_grok ... ok
+test tests::provider_badge_follows_explicit_provider_then_model_family ... ok
+test tests::recent_monitor_waits_for_partial_lines_and_enforces_poll_budget ... ok
+test tests::monitor_reads_recent_tail_while_historical_replay_is_bounded_and_resets_on_truncate ... ok
+test tests::response_qualifies_rejects_implausibly_fast_responses ... ok
+test tests::samples_fail_closed_on_invalid_numbers_and_explicitly_null_missing_fields ... ok
+test tests::samples_of_different_periods_queued_in_one_window_share_a_slot_and_its_delay ... ok
+test tests::selection_modes_parse_and_legacy_latest_means_auto ... ok
+test tests::shared_provider_region_is_present_only_for_bedrock ... ok
+test tests::shared_response_fields_follow_the_shared_timing_rule ... ok
+test tests::shared_samples_always_encode_prompt_cache_keys_and_never_share_an_inconsistent_set ... ok
+test tests::shared_samples_always_serialize_the_surface ... ok
+test tests::shared_samples_carry_valid_response_fields_and_drop_inconsistent_ones ... ok
+test tests::sharing_allowlists_bedrock_and_vertex_providers_only_for_claude_code ... ok
+test tests::sharing_is_post_enable_only_off_wipes_queue_and_limits_retention ... ok
+test tests::sharing_queue_waits_for_final_primary_turns_and_shares_each_turn_once ... ok
+test tests::signed_cross_source_json_fixture_uses_exact_wire_fields_and_signature_bytes ... ok
+test tests::recent_tail_reader_synchronizes_claude_transcripts_but_archive_reads_everything ... ok
+test tests::poll_deadlines_run_from_replay_to_the_settle_time_to_none ... ok
+test tests::subagent_samples_share_only_allowlisted_keys_with_the_current_app_version ... ok
+test tests::source_monitor_routes_notes_and_deadlines_to_each_source ... ok
+test tests::surface_round_trips_through_history_and_decodes_missing_or_unknown_values ... ok
+test tests::the_consent_example_is_the_real_envelope_with_fake_values ... ok
+test tests::t3_codex_originators_change_only_the_client_identity ... ok
+test tests::the_default_upload_delay_is_random_within_a_minute ... ok
+test tests::the_sent_example_of_the_browser_preview_matches_the_real_one ... ok
+test tests::the_tray_reading_follows_the_dashboard_hero_precedence_and_filters ... ok
+test tests::the_upload_delay_is_between_zero_and_sixty_seconds_whatever_the_source_says ... ok
+test tests::turning_sharing_off_clears_waiting_samples_and_their_delays ... ok
+test tests::turns_are_final_after_the_settle_time_unless_a_relevant_file_has_unread_content ... ok
+test tests::the_queue_never_holds_more_than_its_cap_even_while_a_large_batch_is_appended ... ok
+test tests::source_monitor_combines_all_adapters_under_one_poll_budget ... ok
+test opencode_tests::the_raw_provider_stays_local_and_is_never_shared ... ok
+
+test result: ok. 403 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 77.98s
+
+[1m[92m     Running[0m tests\cockpit_contention.rs (desktop\core\target\debug\build\tokrate-core/ec7bc058c95a99ea\out\cockpit_contention-ec7bc058c95a99ea.exe)
+
+running 10 tests
+[missing-root] 50 次缺失 root 的 poll 用时 1.8263ms
+test a_missing_root_degrades_without_blocking ... ok
+[append] 50 次追加共 16490 字节，每次只读增量
+test an_append_is_read_incrementally_not_from_the_start ... ok
+[checkpoint] 3 个文件从 checkpoint 恢复读 0 字节；新追加 3 字节时读 617 字节（含找回头部的一次重读）
+test a_checkpoint_resumes_without_rereading_and_does_not_hide_new_writes ... ok
+[sharing] 并发只读 + 追加写入均成功（默认共享语义不排斥其他进程）
+test opening_a_file_another_reader_holds_still_succeeds ... ok
+test poll_signature_still_yields_a_result_of_records ... ok
+[bounded] 24 个文件 / 共 10886 字节 / 累计读 18662 字节，稳定后每轮 0 字节
+test a_poll_reads_bounded_bytes_and_never_repeats_what_it_read ... ok
+[disappear] 截断 / 原子替换 / 删除 三种情况均降级完成，未 panic
+test truncation_replacement_and_deletion_degrade_without_panicking ... ok
+[scale] 文件数   100 / 写入      29190 字节 / 建文件 38.8964ms / 首轮(含发现) 4.1202ms / 最慢一轮 4.1202ms / 8 轮共读     43578 字节 / 单轮最多    7008 字节
+[source] 第 0 轮：21456 字节 / 5.6022ms
+[source] 第 1 轮：15552 字节 / 2.0585ms
+[source] 第 2 轮：21456 字节 / 1.6997ms
+[source] 第 3 轮：15552 字节 / 1.9253ms
+[source] 第 4 轮：10708 字节 / 864.4µs
+[source] 第 5 轮：7776 字节 / 880.2µs
+test the_aggregate_source_monitor_honours_its_own_byte_budget ... ok
+[scale] 文件数  1000 / 写入     292890 字节 / 建文件 188.8756ms / 首轮(含发现) 32.4577ms / 最慢一轮 32.4577ms / 8 轮共读     43680 字节 / 单轮最多    7032 字节
+[concurrent] 外部读完成 200 次 / 单轮最多 131072 字节 / 追加 200 行 / 用时 487.5164ms
+test a_concurrent_reader_and_writer_of_the_same_file_do_not_break_the_poll ... ok
+[scale] 文件数 10000 / 写入    2938890 字节 / 建文件 1.9926066s / 首轮(含发现) 84.6514ms / 最慢一轮 84.6514ms / 8 轮共读     43776 字节 / 单轮最多    7056 字节
+[scale] 汇总
+- 100 个文件：首轮 4.1202ms，单轮最多 7008 字节
+- 1000 个文件：首轮 32.4577ms，单轮最多 7032 字节
+- 10000 个文件：首轮 84.6514ms，单轮最多 7056 字节
+
+test many_session_files_keep_the_poll_cost_bounded ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.75s
+
+[1m[92m   Doc-tests[0m tokrate_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m    Updating[0m crates.io index
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m adler2 v2.0.1
+[1m[92m  Downloaded[0m heck v0.5.0
+[1m[92m  Downloaded[0m jiff-tzdb-platform v0.1.3
+[1m[92m  Downloaded[0m hex v0.4.3
+[1m[92m  Downloaded[0m markup5ever v0.39.0
+[1m[92m  Downloaded[0m jiff-tzdb v0.1.8
+[1m[92m  Downloaded[0m cargo_metadata v0.19.2
+[1m[92m  Downloaded[0m ref-cast v1.0.27
+[1m[92m  Downloaded[0m darling_macro v0.24.1
+[1m[92m  Downloaded[0m alloc-no-stdlib v3.0.0
+[1m[92m  Downloaded[0m alloc-stdlib v0.3.0
+[1m[92m  Downloaded[0m cfg_aliases v0.2.2
+[1m[92m  Downloaded[0m cargo-platform v0.1.9
+[1m[92m  Downloaded[0m idna_adapter v1.2.2
+[1m[92m  Downloaded[0m precomputed-hash v0.1.1
+[1m[92m  Downloaded[0m rand_pcg v0.10.2
+[1m[92m  Downloaded[0m rustc-hash v2.1.3
+[1m[92m  Downloaded[0m phf_codegen v0.13.1
+[1m[92m  Downloaded[0m same-file v1.0.6
+[1m[92m  Downloaded[0m ident_case v1.0.1
+[1m[92m  Downloaded[0m defmt-parser v1.0.0
+[1m[92m  Downloaded[0m phf_generator v0.13.1
+[1m[92m  Downloaded[0m phf_shared v0.13.1
+[1m[92m  Downloaded[0m potential_utf v0.1.6
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m percent-encoding v2.3.2
+[1m[92m  Downloaded[0m new_debug_unreachable v1.0.6
+[1m[92m  Downloaded[0m powerfmt v0.2.0
+[1m[92m  Downloaded[0m lru-slab v0.1.3
+[1m[92m  Downloaded[0m num-conv v0.2.2
+[1m[92m  Downloaded[0m option-ext v0.2.0
+[1m[92m  Downloaded[0m http-body v1.1.0
+[1m[92m  Downloaded[0m mime v0.3.17
+[1m[92m  Downloaded[0m ico v0.5.0
+[1m[92m  Downloaded[0m zerofrom v0.1.8
+[1m[92m  Downloaded[0m dpi v0.1.2
+[1m[92m  Downloaded[0m dunce v1.0.5
+[1m[92m  Downloaded[0m lock_api v0.4.14
+[1m[92m  Downloaded[0m serialize-to-javascript-impl v0.1.2
+[1m[92m  Downloaded[0m rand_core v0.9.5
+[1m[92m  Downloaded[0m cssparser-macros v0.7.1
+[1m[92m  Downloaded[0m dirs v7.0.0
+[1m[92m  Downloaded[0m infer v0.22.0
+[1m[92m  Downloaded[0m fnv v1.0.7
+[1m[92m  Downloaded[0m form_urlencoded v1.2.2
+[1m[92m  Downloaded[0m futures-sink v0.3.34
+[1m[92m  Downloaded[0m cargo_toml v1.0.1
+[1m[92m  Downloaded[0m cpufeatures v0.3.1
+[1m[92m  Downloaded[0m ref-cast-impl v1.0.27
+[1m[92m  Downloaded[0m schemars v1.2.2
+[1m[92m  Downloaded[0m futures-core v0.3.34
+[1m[92m  Downloaded[0m strsim v0.11.1
+[1m[92m  Downloaded[0m bit-set v0.8.0
+[1m[92m  Downloaded[0m dtoa-short v0.3.5
+[1m[92m  Downloaded[0m pin-project-lite v0.2.17
+[1m[92m  Downloaded[0m ipnet v2.12.2
+[1m[92m  Downloaded[0m rand_chacha v0.9.0
+[1m[92m  Downloaded[0m rand_core v0.10.1
+[1m[92m  Downloaded[0m raw-window-handle v0.6.2
+[1m[92m  Downloaded[0m http-body-util v0.1.5
+[1m[92m  Downloaded[0m hyper-rustls v0.27.10
+[1m[92m  Downloaded[0m json-patch v4.2.0
+[1m[92m  Downloaded[0m notify-types v2.1.0
+[1m[92m  Downloaded[0m phf v0.13.1
+[1m[92m  Downloaded[0m schemars_derive v0.8.22
+[1m[92m  Downloaded[0m thiserror v2.0.21
+[1m[92m  Downloaded[0m tokio-macros v2.7.2
+[1m[92m  Downloaded[0m parking_lot v0.12.5
+[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+[1m[92m  Downloaded[0m quinn-udp v0.5.16
+[1m[92m  Downloaded[0m rustls-pki-types v1.15.1
+[1m[92m  Downloaded[0m serde_spanned v1.1.1
+[1m[92m  Downloaded[0m atomic-waker v1.1.2
+[1m[92m  Downloaded[0m dirs-sys v0.5.0
+[1m[92m  Downloaded[0m futures-macro v0.3.34
+[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m minisign-verify v0.2.5
+[1m[92m  Downloaded[0m open v5.4.4
+[1m[92m  Downloaded[0m phf_macros v0.13.1
+[1m[92m  Downloaded[0m scopeguard v1.2.0
+[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+[1m[92m  Downloaded[0m sync_wrapper v1.0.2
+[1m[92m  Downloaded[0m tauri-plugin-single-instance v2.5.2
+[1m[92m  Downloaded[0m winapi-util v0.1.11
+[1m[92m  Downloaded[0m windows-numerics v0.3.1
+[1m[92m  Downloaded[0m windows-strings v0.5.1
+[1m[92m  Downloaded[0m futures-io v0.3.34
+[1m[92m  Downloaded[0m futures-task v0.3.34
+[1m[92m  Downloaded[0m notify v8.2.0
+[1m[92m  Downloaded[0m rfd v0.15.4
+[1m[92m  Downloaded[0m ryu v1.0.23
+[1m[92m  Downloaded[0m serde_repr v0.1.21
+[1m[92m  Downloaded[0m serialize-to-javascript v0.1.2
+[1m[92m  Downloaded[0m string_cache_codegen v0.6.1
+[1m[92m  Downloaded[0m byteorder-lite v0.1.0
+[1m[92m  Downloaded[0m zerovec-derive v0.11.6
+[1m[92m  Downloaded[0m dtoa v1.0.11
+[1m[92m  Downloaded[0m plist v1.10.1
+[1m[92m  Downloaded[0m rustls-platform-verifier v0.7.1
+[1m[92m  Downloaded[0m siphasher v1.0.4
+[1m[92m  Downloaded[0m displaydoc v0.2.7
+[1m[92m  Downloaded[0m embed-resource v3.0.11
+[1m[92m  Downloaded[0m defmt-macros v1.1.1
+[1m[92m  Downloaded[0m deranged v0.5.8
+[1m[92m  Downloaded[0m servo_arc v0.4.3
+[1m[92m  Downloaded[0m tauri-plugin v2.7.1
+[1m[92m  Downloaded[0m tower-layer v0.3.3
+[1m[92m  Downloaded[0m tower-service v0.3.3
+[1m[92m  Downloaded[0m parking_lot_core v0.9.12
+[1m[92m  Downloaded[0m indexmap v1.9.3
+[1m[92m  Downloaded[0m jsonptr v0.7.1
+[1m[92m  Downloaded[0m litemap v0.8.3
+[1m[92m  Downloaded[0m log v0.4.34
+[1m[92m  Downloaded[0m walkdir v2.5.0
+[1m[92m  Downloaded[0m web_atoms v0.2.6
+[1m[92m  Downloaded[0m windows-targets v0.53.5
+[1m[92m  Downloaded[0m html5ever v0.39.0
+[1m[92m  Downloaded[0m icu_normalizer_data v2.3.0
+[1m[92m  Downloaded[0m icu_provider v2.3.1
+[1m[92m  Downloaded[0m keyring v3.6.3
+[1m[92m  Downloaded[0m miniz_oxide v0.8.9
+[1m[92m  Downloaded[0m miniz_oxide v0.9.1
+[1m[92m  Downloaded[0m notify-rust v4.18.2
+[1m[92m  Downloaded[0m rustls-webpki v0.103.15
+[1m[92m  Downloaded[0m schemars v0.8.22
+[1m[92m  Downloaded[0m windows-core v0.62.2
+[1m[92m  Downloaded[0m icu_locale_core v2.3.0
+[1m[92m  Downloaded[0m quinn v0.11.12
+[1m[92m  Downloaded[0m schemars v0.9.0
+[1m[92m  Downloaded[0m mio v1.2.4
+[1m[92m  Downloaded[0m rand v0.10.3
+[1m[92m  Downloaded[0m simd-adler32 v0.3.10
+[1m[92m  Downloaded[0m slab v0.4.12
+[1m[92m  Downloaded[0m string_cache v0.9.0
+[1m[92m  Downloaded[0m synstructure v0.14.0
+[1m[92m  Downloaded[0m yoke-derive v0.8.4
+[1m[92m  Downloaded[0m anyhow v1.0.104
+[1m[92m  Downloaded[0m bit-vec v0.8.0
+[1m[92m  Downloaded[0m bitflags v1.3.2
+[1m[92m  Downloaded[0m byteorder v1.5.0
+[1m[92m  Downloaded[0m cookie v0.18.2
+[1m[92m  Downloaded[0m crc32fast v1.5.2
+[1m[92m  Downloaded[0m crossbeam-utils v0.8.23
+[1m[92m  Downloaded[0m defmt v1.1.1
+[1m[92m  Downloaded[0m dyn-clone v1.0.20
+[1m[92m  Downloaded[0m fdeflate v0.3.7
+[1m[92m  Downloaded[0m futures-channel v0.3.34
+[1m[92m  Downloaded[0m glob v0.3.4
+[1m[92m  Downloaded[0m http v1.5.0
+[1m[92m  Downloaded[0m hyper-util v0.1.21
+[1m[92m  Downloaded[0m icu_collections v2.3.0
+[1m[92m  Downloaded[0m icu_properties v2.3.0
+[1m[92m  Downloaded[0m indexmap v2.14.2
+[1m[92m  Downloaded[0m keyboard-types v0.8.3
+[1m[92m  Downloaded[0m muda v0.20.0
+[1m[92m  Downloaded[0m png v0.17.16
+[1m[92m  Downloaded[0m png v0.18.1
+[1m[92m  Downloaded[0m rand v0.9.5
+[1m[92m  Downloaded[0m serde-untagged v0.1.9
+[1m[92m  Downloaded[0m serde_derive_internals v0.29.1
+[1m[92m  Downloaded[0m serde_with_macros v3.24.0
+[1m[92m  Downloaded[0m tauri-codegen v2.7.1
+[1m[92m  Downloaded[0m toml_datetime v1.1.1+spec-1.1.0
+[1m[92m  Downloaded[0m try-lock v0.2.5
+[1m[92m  Downloaded[0m webview2-com-macros v0.8.1
+[1m[92m  Downloaded[0m windows-registry v0.6.1
+[1m[92m  Downloaded[0m windows-targets v0.52.6
+[1m[92m  Downloaded[0m zerofrom-derive v0.1.8
+[1m[92m  Downloaded[0m bs58 v0.5.1
+[1m[92m  Downloaded[0m bytemuck v1.25.2
+[1m[92m  Downloaded[0m bytes v1.12.1
+[1m[92m  Downloaded[0m camino v1.2.6
+[1m[92m  Downloaded[0m chacha20 v0.10.2
+[1m[92m  Downloaded[0m cssparser v0.37.0
+[1m[92m  Downloaded[0m ctor v1.0.13
+[1m[92m  Downloaded[0m darling v0.24.1
+[1m[92m  Downloaded[0m erased-serde v0.4.10
+[1m[92m  Downloaded[0m getrandom v0.3.4
+[1m[92m  Downloaded[0m icu_properties_data v2.3.0
+[1m[92m  Downloaded[0m idna v1.1.0
+[1m[92m  Downloaded[0m jiff-core v0.1.1
+[1m[92m  Downloaded[0m regex v1.13.1
+[1m[92m  Downloaded[0m reqwest v0.12.28
+[1m[92m  Downloaded[0m reqwest v0.13.5
+[1m[92m  Downloaded[0m tauri-build v2.7.1
+[1m[92m  Downloaded[0m tauri-macros v2.7.1
+[1m[92m  Downloaded[0m thiserror-impl v2.0.21
+[1m[92m  Downloaded[0m time-macros v0.2.32
+[1m[92m  Downloaded[0m tinyvec v1.13.3
+[1m[92m  Downloaded[0m toml v1.1.6+spec-1.1.0
+[1m[92m  Downloaded[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m  Downloaded[0m toml_writer v1.1.2+spec-1.1.0
+[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m tray-icon v0.25.1
+[1m[92m  Downloaded[0m urlpattern v0.6.0
+[1m[92m  Downloaded[0m cfb v0.14.0
+[1m[92m  Downloaded[0m crossbeam-channel v0.5.17
+[1m[92m  Downloaded[0m derive_more v2.1.1
+[1m[92m  Downloaded[0m derive_more-impl v2.1.1
+[1m[92m  Downloaded[0m hyper v1.11.1
+[1m[92m  Downloaded[0m selectors v0.38.0
+[1m[92m  Downloaded[0m socket2 v0.6.5
+[1m[92m  Downloaded[0m softbuffer v0.4.8
+[1m[92m  Downloaded[0m tauri-utils v2.10.1
+[1m[92m  Downloaded[0m flate2 v1.1.10
+[1m[92m  Downloaded[0m wry v0.57.0
+[1m[92m  Downloaded[0m moxcms v0.8.1
+[1m[92m  Downloaded[0m quick-xml v0.42.0
+[1m[92m  Downloaded[0m tauri-plugin-notification v2.6.0
+[1m[92m  Downloaded[0m tauri-winrt-notification v0.8.1
+[1m[92m  Downloaded[0m darling_core v0.24.1
+[1m[92m  Downloaded[0m hashbrown v0.12.3
+[1m[92m  Downloaded[0m quinn-proto v0.11.19
+[1m[92m  Downloaded[0m untrusted v0.9.0
+[1m[92m  Downloaded[0m image v0.25.10
+[1m[92m  Downloaded[0m tauri-runtime v2.12.1
+[1m[92m  Downloaded[0m base64 v0.23.1
+[1m[92m  Downloaded[0m dom_query v0.28.0
+[1m[92m  Downloaded[0m regex-syntax v0.8.11
+[1m[92m  Downloaded[0m rustls v0.23.45
+[1m[92m  Downloaded[0m tauri-plugin-updater v2.13.1
+[1m[92m  Downloaded[0m web-time v1.1.0
+[1m[92m  Downloaded[0m windows-threading v0.2.1
+[1m[92m  Downloaded[0m windows-version v0.1.7
+[1m[92m  Downloaded[0m zerocopy v0.8.59
+[1m[92m  Downloaded[0m zerovec v0.11.8
+[1m[92m  Downloaded[0m zip v4.6.1
+[1m[92m  Downloaded[0m time-core v0.1.9
+[1m[92m  Downloaded[0m vswhom-sys v0.1.3
+[1m[92m  Downloaded[0m want v0.3.1
+[1m[92m  Downloaded[0m tokio-rustls v0.26.6
+[1m[92m  Downloaded[0m webview2-com v0.39.1
+[1m[92m  Downloaded[0m tendril v0.5.1
+[1m[92m  Downloaded[0m vswhom v0.1.0
+[1m[92m  Downloaded[0m yoke v0.8.3
+[1m[92m  Downloaded[0m writeable v0.6.4
+[1m[92m  Downloaded[0m tower v0.5.3
+[1m[92m  Downloaded[0m utf8_iter v1.0.4
+[1m[92m  Downloaded[0m tinystr v0.8.4
+[1m[92m  Downloaded[0m tower-http v0.6.11
+[1m[92m  Downloaded[0m aho-corasick v1.1.5
+[1m[92m  Downloaded[0m zlib-rs v0.6.8
+[1m[92m  Downloaded[0m futures-util v0.3.34
+[1m[92m  Downloaded[0m serde_with v3.24.0
+[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m winnow v1.0.4
+[1m[92m  Downloaded[0m brotli-decompressor v6.0.1
+[1m[92m  Downloaded[0m tauri-winres v0.3.6
+[1m[92m  Downloaded[0m typeid v1.0.3
+[1m[92m  Downloaded[0m zeroize_derive v1.5.0
+[1m[92m  Downloaded[0m windows-collections v0.3.2
+[1m[92m  Downloaded[0m windows-interface v0.59.3
+[1m[92m  Downloaded[0m windows-result v0.4.1
+[1m[92m  Downloaded[0m windows-implement v0.60.2
+[1m[92m  Downloaded[0m windows-future v0.3.2
+[1m[92m  Downloaded[0m winreg v0.55.0
+[1m[92m  Downloaded[0m zerotrie v0.2.5
+[1m[92m  Downloaded[0m tao v0.37.1
+[1m[92m  Downloaded[0m webpki-roots v1.0.9
+[1m[92m  Downloaded[0m tauri v2.12.1
+[1m[92m  Downloaded[0m tauri-runtime-wry v2.12.1
+[1m[92m  Downloaded[0m tracing-attributes v0.1.31
+[1m[92m  Downloaded[0m icu_normalizer v2.3.0
+[1m[92m  Downloaded[0m unicode-segmentation v1.13.3
+[1m[92m  Downloaded[0m tokio-util v0.7.19
+[1m[92m  Downloaded[0m regex-automata v0.4.18
+[1m[92m  Downloaded[0m jiff v0.2.37
+[1m[92m  Downloaded[0m time v0.3.55
+[1m[92m  Downloaded[0m tracing v0.1.44
+[1m[92m  Downloaded[0m libc v0.2.190
+[1m[92m  Downloaded[0m pxfm v0.1.30
+[1m[92m  Downloaded[0m brotli v9.0.0
+[1m[92m  Downloaded[0m windows_x86_64_msvc v0.52.6
+[1m[92m  Downloaded[0m windows_x86_64_msvc v0.53.1
+[1m[92m  Downloaded[0m tokio v1.53.2
+[1m[92m  Downloaded[0m ring v0.17.14
+[1m[92m  Downloaded[0m window-vibrancy v0.8.1
+[1m[92m  Downloaded[0m windows-sys v0.60.2
+[1m[92m  Downloaded[0m windows-sys v0.59.0
+[1m[92m  Downloaded[0m webview2-com-sys v0.39.1
+[1m[92m  Downloaded[0m windows v0.62.2
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.26
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m windows-link v0.2.1
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m cfg-if v1.0.5
+[1m[92m   Compiling[0m icu_normalizer_data v2.3.0
+[1m[92m   Compiling[0m icu_properties_data v2.3.0
+[1m[92m   Compiling[0m siphasher v1.0.4
+[1m[92m   Compiling[0m syn v3.0.6
+[1m[92m   Compiling[0m syn v2.0.119
+[1m[92m   Compiling[0m phf_shared v0.13.1
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m thiserror v2.0.21
+[1m[92m   Compiling[0m phf_generator v0.13.1
+[1m[92m   Compiling[0m stable_deref_trait v1.2.1
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m find-msvc-tools v0.1.14
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m cc v1.6.0
+[1m[92m   Compiling[0m windows-sys v0.61.2
+[1m[92m   Compiling[0m synstructure v0.14.0
+[1m[92m   Compiling[0m smallvec v1.16.2
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m zerofrom-derive v0.1.8
+[1m[92m   Compiling[0m yoke-derive v0.8.4
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m zerovec-derive v0.11.6
+[1m[92m   Compiling[0m displaydoc v0.2.7
+[1m[92m   Compiling[0m thiserror-impl v2.0.21
+[1m[92m   Compiling[0m zerofrom v0.1.8
+[1m[92m   Compiling[0m yoke v0.8.3
+[1m[92m   Compiling[0m zerovec v0.11.8
+[1m[92m   Compiling[0m phf_macros v0.13.1
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m typeid v1.0.3
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m semver v1.0.28
+[1m[92m   Compiling[0m time-core v0.1.9
+[1m[92m   Compiling[0m num-conv v0.2.2
+[1m[92m   Compiling[0m tinystr v0.8.4
+[1m[92m   Compiling[0m phf_codegen v0.13.1
+[1m[92m   Compiling[0m libc v0.2.190
+[1m[92m   Compiling[0m erased-serde v0.4.10
+[1m[92m   Compiling[0m ident_case v1.0.1
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m writeable v0.6.4
+[1m[92m   Compiling[0m litemap v0.8.3
+[1m[92m   Compiling[0m strsim v0.11.1
+[1m[92m   Compiling[0m icu_locale_core v2.3.0
+[1m[92m   Compiling[0m darling_core v0.24.1
+[1m[92m   Compiling[0m potential_utf v0.1.6
+[1m[92m   Compiling[0m zerotrie v0.2.5
+[1m[92m   Compiling[0m utf8_iter v1.0.4
+[1m[92m   Compiling[0m icu_collections v2.3.0
+[1m[92m   Compiling[0m icu_provider v2.3.1
+[1m[92m   Compiling[0m new_debug_unreachable v1.0.6
+[1m[92m   Compiling[0m anyhow v1.0.104
+[1m[92m   Compiling[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m lock_api v0.4.14
+[1m[92m   Compiling[0m phf v0.13.1
+[1m[92m   Compiling[0m string_cache_codegen v0.6.1
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m windows_x86_64_msvc v0.52.6
+[1m[92m   Compiling[0m precomputed-hash v0.1.1
+[1m[92m   Compiling[0m web_atoms v0.2.6
+[1m[92m   Compiling[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m icu_properties v2.3.0
+[1m[92m   Compiling[0m icu_normalizer v2.3.0
+[1m[92m   Compiling[0m darling_macro v0.24.1
+[1m[92m   Compiling[0m darling v0.24.1
+[1m[92m   Compiling[0m serde_with_macros v3.24.0
+[1m[92m   Compiling[0m windows-result v0.4.1
+[1m[92m   Compiling[0m windows-strings v0.5.1
+[1m[92m   Compiling[0m winnow v1.0.4
+[1m[92m   Compiling[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m   Compiling[0m idna_adapter v1.2.2
+[1m[92m   Compiling[0m string_cache v0.9.0
+[1m[92m   Compiling[0m generic-array v0.14.7
+[1m[92m   Compiling[0m serde_spanned v1.1.1
+[1m[92m   Compiling[0m toml_datetime v1.1.1+spec-1.1.0
+[1m[92m   Compiling[0m percent-encoding v2.3.2
+[1m[92m   Compiling[0m bytes v1.12.1
+[1m[92m   Compiling[0m toml_writer v1.1.2+spec-1.1.0
+[1m[92m   Compiling[0m log v0.4.34
+[1m[92m   Compiling[0m dtoa v1.0.11
+[1m[92m   Compiling[0m toml v1.1.6+spec-1.1.0
+[1m[92m   Compiling[0m dtoa-short v0.3.5
+[1m[92m   Compiling[0m form_urlencoded v1.2.2
+[1m[92m   Compiling[0m uuid v1.27.0
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m tendril v0.5.1
+[1m[92m   Compiling[0m selectors v0.38.0
+[1m[92m   Compiling[0m aho-corasick v1.1.5
+[1m[92m   Compiling[0m indexmap v1.9.3
+[1m[92m   Compiling[0m derive_more-impl v2.1.1
+[1m[92m   Compiling[0m cssparser-macros v0.7.1
+[1m[92m   Compiling[0m camino v1.2.6
+[1m[92m   Compiling[0m alloc-no-stdlib v3.0.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m alloc-stdlib v0.3.0
+[1m[92m   Compiling[0m cssparser v0.37.0
+[1m[92m   Compiling[0m derive_more v2.1.1
+[1m[92m   Compiling[0m markup5ever v0.39.0
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m winapi-util v0.1.11
+[1m[92m   Compiling[0m serde_derive_internals v0.29.1
+[1m[92m   Compiling[0m servo_arc v0.4.3
+[1m[92m   Compiling[0m rustc-hash v2.1.3
+[1m[92m   Compiling[0m regex-automata v0.4.18
+[1m[92m   Compiling[0m powerfmt v0.2.0
+[1m[92m   Compiling[0m schemars v0.8.22
+[1m[92m   Compiling[0m web-time v1.1.0
+[1m[92m   Compiling[0m pin-project-lite v0.2.17
+[1m[92m   Compiling[0m deranged v0.5.8
+[1m[92m   Compiling[0m hashbrown v0.12.3
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m time v0.3.55
+[1m[92m   Compiling[0m cfb v0.14.0
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m regex v1.13.1
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m schemars_derive v0.8.22
+[1m[92m   Compiling[0m same-file v1.0.6
+[1m[92m   Compiling[0m html5ever v0.39.0
+[1m[92m   Compiling[0m brotli-decompressor v6.0.1
+[1m[92m   Compiling[0m jsonptr v0.7.1
+[1m[92m   Compiling[0m cargo-platform v0.1.9
+[1m[92m   Compiling[0m rustc_version v0.4.1
+[1m[92m   Compiling[0m quick-xml v0.42.0
+[1m[92m   Compiling[0m dunce v1.0.5
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m base64 v0.23.1
+[1m[92m   Compiling[0m foldhash v0.2.0
+[1m[92m   Compiling[0m dyn-clone v1.0.20
+[1m[92m   Compiling[0m plist v1.10.1
+[1m[92m   Compiling[0m http v1.5.0
+[1m[92m   Compiling[0m dom_query v0.28.0
+[1m[92m   Compiling[0m cargo_metadata v0.19.2
+[1m[92m   Compiling[0m brotli v9.0.0
+[1m[92m   Compiling[0m json-patch v4.2.0
+[1m[92m   Compiling[0m serde-untagged v0.1.9
+[1m[92m   Compiling[0m walkdir v2.5.0
+[1m[92m   Compiling[0m urlpattern v0.6.0
+[1m[92m   Compiling[0m infer v0.22.0
+[1m[92m   Compiling[0m serde_with v3.24.0
+[1m[92m   Compiling[0m windows-interface v0.59.3
+[1m[92m   Compiling[0m windows-implement v0.60.2
+[1m[92m   Compiling[0m ctor v1.0.13
+[1m[92m   Compiling[0m glob v0.3.4
+[1m[92m   Compiling[0m windows-core v0.62.2
+[1m[92m   Compiling[0m vswhom-sys v0.1.3
+[1m[92m   Compiling[0m tauri-utils v2.10.1
+[1m[92m   Compiling[0m windows-targets v0.52.6
+[1m[92m   Compiling[0m windows-sys v0.59.0
+[1m[92m   Compiling[0m socket2 v0.6.5
+[1m[92m   Compiling[0m mio v1.2.4
+[1m[92m   Compiling[0m tokio-macros v2.7.2
+[1m[92m   Compiling[0m windows-threading v0.2.1
+[1m[92m   Compiling[0m zeroize v1.9.0
+[1m[92m   Compiling[0m windows-future v0.3.2
+[1m[92m   Compiling[0m winreg v0.55.0
+[1m[92m   Compiling[0m tokio v1.53.2
+[1m[92m   Compiling[0m vswhom v0.1.0
+[1m[92m   Compiling[0m windows-collections v0.3.2
+[1m[92m   Compiling[0m windows-numerics v0.3.1
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m option-ext v0.2.0
+[1m[92m   Compiling[0m futures-core v0.3.34
+[1m[92m   Compiling[0m dirs-sys v0.5.0
+[1m[92m   Compiling[0m windows v0.62.2
+[1m[92m   Compiling[0m embed-resource v3.0.11
+[1m[92m   Compiling[0m heck v0.5.0
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m tauri-winres v0.3.6
+[1m[92m   Compiling[0m dirs v7.0.0
+[1m[92m   Compiling[0m tracing-core v0.1.36
+[1m[92m   Compiling[0m cargo_toml v1.0.1
+[1m[92m   Compiling[0m time-macros v0.2.32
+[1m[92m   Compiling[0m tracing-attributes v0.1.31
+[1m[92m   Compiling[0m ring v0.17.14
+[1m[92m   Compiling[0m raw-window-handle v0.6.2
+[1m[92m   Compiling[0m typenum v1.20.1
+[1m[92m   Compiling[0m crossbeam-utils v0.8.23
+[1m[92m   Compiling[0m tracing v0.1.44
+[1m[92m   Compiling[0m tauri-build v2.7.1
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m dpi v0.1.2
+[1m[92m   Compiling[0m webview2-com-sys v0.39.1
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m windows-version v0.1.7
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m miniz_oxide v0.8.9
+[1m[92m   Compiling[0m fdeflate v0.3.7
+[1m[92m   Compiling[0m rustls-pki-types v1.15.1
+[1m[92m   Compiling[0m cookie v0.18.2
+[1m[92m   Compiling[0m untrusted v0.9.0
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m zerocopy v0.8.59
+[1m[92m   Compiling[0m crossbeam-channel v0.5.17
+[1m[92m   Compiling[0m tauri v2.12.1
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m http-body v1.1.0
+[1m[92m   Compiling[0m webview2-com-macros v0.8.1
+[1m[92m   Compiling[0m futures-macro v0.3.34
+[1m[92m   Compiling[0m slab v0.4.12
+[1m[92m   Compiling[0m futures-task v0.3.34
+[1m[92m   Compiling[0m bitflags v1.3.2
+[1m[92m   Compiling[0m httparse v1.10.1
+[1m[92m   Compiling[0m rustls v0.23.45
+[1m[92m   Compiling[0m png v0.17.16
+[1m[92m   Compiling[0m webview2-com v0.39.1
+[1m[92m   Compiling[0m futures-util v0.3.34
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m rustls-webpki v0.103.15
+[1m[92m   Compiling[0m tauri-plugin v2.7.1
+[1m[92m   Compiling[0m tauri-runtime v2.12.1
+[1m[92m   Compiling[0m muda v0.20.0
+[1m[92m   Compiling[0m try-lock v0.2.5
+[1m[92m   Compiling[0m wry v0.57.0
+[1m[92m   Compiling[0m tower-service v0.3.3
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m byteorder v1.5.0
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m ico v0.5.0
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m want v0.3.1
+[1m[92m   Compiling[0m png v0.18.1
+[1m[92m   Compiling[0m futures-channel v0.3.34
+[1m[92m   Compiling[0m keyboard-types v0.8.3
+[1m[92m   Compiling[0m pxfm v0.1.30
+[1m[92m   Compiling[0m tray-icon v0.25.1
+[1m[92m   Compiling[0m base64 v0.22.1
+[1m[92m   Compiling[0m unicode-segmentation v1.13.3
+[1m[92m   Compiling[0m atomic-waker v1.1.2
+[1m[92m   Compiling[0m tauri-runtime-wry v2.12.1
+[1m[92m   Compiling[0m windows_x86_64_msvc v0.53.1
+[1m[92m   Compiling[0m hyper v1.11.1
+[1m[92m   Compiling[0m tao v0.37.1
+[1m[92m   Compiling[0m moxcms v0.8.1
+[1m[92m   Compiling[0m tauri-codegen v2.7.1
+[1m[92m   Compiling[0m softbuffer v0.4.8
+[1m[92m   Compiling[0m sync_wrapper v1.0.2
+[1m[92m   Compiling[0m windows-registry v0.6.1
+[1m[92m   Compiling[0m serialize-to-javascript-impl v0.1.2
+[1m[92m   Compiling[0m bytemuck v1.25.2
+[1m[92m   Compiling[0m vcpkg v0.2.15
+[1m[92m   Compiling[0m pkg-config v0.3.34
+[1m[92m   Compiling[0m byteorder-lite v0.1.0
+[1m[92m   Compiling[0m ipnet v2.12.2
+[1m[92m   Compiling[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m tower v0.5.3
+[1m[92m   Compiling[0m hyper-util v0.1.21
+[1m[92m   Compiling[0m libsqlite3-sys v0.38.2
+[1m[92m   Compiling[0m image v0.25.10
+[1m[92m   Compiling[0m serialize-to-javascript v0.1.2
+[1m[92m   Compiling[0m tauri-macros v2.7.1
+[1m[92m   Compiling[0m tokio-rustls v0.26.6
+[1m[92m   Compiling[0m webpki-roots v1.0.9
+[1m[92m   Compiling[0m window-vibrancy v0.8.1
+[1m[92m   Compiling[0m curve25519-dalek v4.1.3
+[1m[92m   Compiling[0m serde_repr v0.1.21
+[1m[92m   Compiling[0m mime v0.3.17
+[1m[92m   Compiling[0m futures-sink v0.3.34
+[1m[92m   Compiling[0m tokio-util v0.7.19
+[1m[92m   Compiling[0m hyper-rustls v0.27.10
+[1m[92m   Compiling[0m windows-targets v0.53.5
+[1m[92m   Compiling[0m tower-http v0.6.11
+[1m[92m   Compiling[0m tauri-plugin-notification v2.6.0
+[1m[92m   Compiling[0m tauri-plugin-updater v2.13.1
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m http-body-util v0.1.5
+[1m[92m   Compiling[0m rand_core v0.6.4
+[1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+[1m[92m   Compiling[0m signature v2.2.0
+[1m[92m   Compiling[0m ed25519 v2.2.3
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m rand_chacha v0.3.1
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m windows-sys v0.60.2
+[1m[92m   Compiling[0m rustls-platform-verifier v0.7.1
+[1m[92m   Compiling[0m tauri-winrt-notification v0.8.1
+[1m[92m   Compiling[0m hashlink v0.12.2
+[1m[92m   Compiling[0m rfd v0.15.4
+[1m[92m   Compiling[0m fallible-iterator v0.3.0
+[1m[92m   Compiling[0m ryu v1.0.23
+[1m[92m   Compiling[0m fallible-streaming-iterator v0.1.9
+[1m[92m   Compiling[0m serde_urlencoded v0.7.1
+[1m[92m   Compiling[0m rusqlite v0.40.2
+[1m[92m   Compiling[0m notify-rust v4.18.2
+[1m[92m   Compiling[0m reqwest v0.13.5
+[1m[92m   Compiling[0m ed25519-dalek v2.2.0
+[1m[92m   Compiling[0m rand v0.9.5
+[1m[92m   Compiling[0m rand v0.8.8
+[1m[92m   Compiling[0m chrono v0.4.45
+[1m[92m   Compiling[0m zip v4.6.1
+[1m[92m   Compiling[0m tokrate-desktop v0.1.31 (D:\a\tokrate-clients-c\tokrate-clients-c\desktop\src-tauri)
+[1m[92m   Compiling[0m notify-types v2.1.0
+[1m[92m   Compiling[0m minisign-verify v0.2.5
+[1m[92m   Compiling[0m keyring v3.6.3
+[1m[92m   Compiling[0m notify v8.2.0
+[1m[92m   Compiling[0m tokrate-core v0.1.31 (D:\a\tokrate-clients-c\tokrate-clients-c\desktop\core)
+[1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m tauri-plugin-single-instance v2.5.2
+[1m[92m   Compiling[0m open v5.4.4
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 3m 38s
+[1m[92m     Running[0m unittests src\main.rs (desktop\src-tauri\target\release\build\tokrate-desktop/5b92b15fd1034a93\out\tokrate_desktop-5b92b15fd1034a93.exe)
+
+running 130 tests
+test badge::tests::dump_badges ... ignored
+test badge::tests::unknown_provider_is_a_plain_dot_without_a_letter ... ok
+test badge::tests::edges_are_antialiased ... ok
+test board::tests::a_board_without_error_alerts_decodes_as_none ... ok
+test board::tests::a_malformed_error_alert_is_skipped_on_its_own ... ok
+test board::tests::a_well_formed_board_is_kept_and_only_the_listed_fields_are_forwarded ... ok
+test board::tests::at_most_twenty_error_alerts_are_kept_in_the_servers_order ... ok
+test badge::tests::xai_inverts_with_the_theme ... ok
+test board::tests::error_alerts_are_decoded_and_forwarded_with_the_listed_fields_only ... ok
+test board::tests::malformed_boards_are_rejected_whole ... ok
+test board::tests::the_blocked_count_is_optional_and_an_alert_with_only_blocks_is_sound ... ok
+test board::tests::the_selection_reads_the_alerts_in_the_servers_order ... ok
+test board::tests::the_throttled_count_is_optional_and_an_alert_with_only_throttles_is_sound ... ok
+test deb_updates::tests::rejects_invalid_semver_and_non_project_or_wrong_version_asset_urls ... ok
+test deb_updates::tests::reports_a_newer_deb_with_notes_and_a_validated_download_url ... ok
+test deb_updates::tests::requires_signature_metadata_and_rejects_oversized_feed ... ok
+test deb_updates::tests::semantic_version_ordering_handles_equal_old_and_prerelease_versions ... ok
+test flyout::tests::a_click_that_just_hid_the_flyout_does_not_reopen_it ... ok
+test flyout::tests::a_window_taller_than_the_work_area_keeps_its_top_visible ... ok
+test flyout::tests::bottom_taskbar_puts_the_flyout_above_the_icon_centred ... ok
+test flyout::tests::corner_placement_uses_the_work_area ... ok
+test flyout::tests::icon_at_the_right_edge_keeps_the_flyout_inside_the_work_area ... ok
+test flyout::tests::top_menu_bar_puts_the_flyout_below_the_icon ... ok
+test flyout::tests::vertical_taskbar_never_covers_the_taskbar ... ok
+test portable::tests::a_file_where_the_data_folder_belongs_is_a_startup_error ... ok
+test badge::tests::circle_background_uses_the_brand_colour_and_letters_are_drawn_in_contrast ... ok
+test portable::tests::the_data_folder_sits_beside_the_running_executable ... ok
+test portable::tests::preparing_creates_every_folder_the_app_writes_to ... ok
+test runtime::tests::a_failed_poll_is_retried_at_the_minimum_spacing ... ok
+test badge::tests::badges_are_64_square_rgba_with_transparent_corners ... ok
+test board::tests::boards_past_a_size_cap_are_rejected ... ok
+test runtime::tests::a_source_is_found_by_its_own_marker_not_by_a_bare_folder ... ok
+test runtime::tests::a_new_alert_posts_one_notification_and_the_end_of_its_episode_one_more ... ok
+test runtime::tests::a_database_change_wakes_a_poll_for_antigravity_and_opencode_but_their_other_files_do_not ... ok
+test runtime::tests::a_withdrawal_that_could_not_be_saved_is_written_by_the_next_poll ... ok
+test runtime::tests::accepting_consent_still_saves_before_it_starts_anything ... ok
+test runtime::tests::accepted_choice_is_versioned_persisted_and_withdrawal_requires_reacceptance ... ok
+test runtime::tests::a_throttle_reaches_the_local_summary_and_the_counts_but_no_plan_figure ... ok
+test runtime::tests::an_alert_after_a_failure_of_the_users_own_says_it_is_not_just_them ... ok
+test runtime::tests::alerts_present_when_the_setting_turns_on_or_sharing_starts_are_not_announced ... ok
+test runtime::tests::auto_follows_the_active_model_then_falls_back_to_the_latest_turn ... ok
+test runtime::tests::corrupt_consent_cannot_enable_a_legacy_setting ... ok
+test runtime::tests::community_error_alerts_reach_the_snapshot_only_while_sharing_is_on ... ok
+test runtime::tests::current_consent_keeps_sharing_authorized ... ok
+test runtime::tests::dashboard_filters_are_validated_and_ask_for_a_poll_only_when_they_change ... ok
+test runtime::tests::corrupt_history_remains_preserved_while_monitoring_continues ... ok
+test runtime::tests::declining_is_saved_and_does_not_prompt_again_at_launch ... ok
+test runtime::tests::declining_consent_stops_everything_even_when_the_settings_cannot_be_saved ... ok
+test runtime::tests::fresh_install_is_local_and_shows_the_contribution_choice ... ok
+test runtime::tests::error_notifications_are_off_by_default_load_from_old_files_and_are_saved ... ok
+test runtime::tests::a_replay_is_saved_when_it_ends_and_the_next_launch_skips_what_it_covered ... ok
+test runtime::tests::kimi_code_homes_follow_their_environment_and_the_platform_user_data_folder ... ok
+test runtime::tests::an_edge_block_reaches_the_local_summary_and_the_counts_but_no_error_text ... ok
+test runtime::tests::legacy_default_on_is_disabled_until_reconfirmed_but_saved_off_stays_quiet ... ok
+test runtime::tests::kimi_code_is_found_by_either_home_and_its_folder_is_chosen_for_the_command_line ... ok
+test runtime::tests::grok_turns_completed_after_launch_become_live_responses ... ok
+test runtime::tests::history_is_saved_at_most_every_ten_seconds_while_records_keep_arriving ... ok
+test runtime::tests::opencode_data_folder_follows_xdg_data_home_else_the_home_folder ... ok
+test runtime::tests::paused_monitoring_shows_a_dash_and_hidden_speed_keeps_the_plain_tray ... ok
+test runtime::tests::notice_version_seven_pauses_sharing_that_was_accepted_under_earlier_versions ... ok
+test runtime::tests::pinned_model_and_cohort_ignore_the_active_model ... ok
+test runtime::tests::persisted_off_and_corrupt_preferences_fail_closed ... ok
+test runtime::tests::nothing_is_posted_with_the_setting_off_sharing_off_or_a_failed_fetch ... ok
+test runtime::tests::provider_badge_defaults_on_loads_when_absent_and_is_patchable ... ok
+test runtime::tests::only_changes_the_monitors_care_about_make_a_poll_due ... ok
+test runtime::tests::records_are_sent_again_only_when_the_history_changed ... ok
+test runtime::tests::provider_errors_wait_for_the_next_poll_while_monitoring_is_paused ... ok
+test runtime::tests::retention_pruning_runs_only_when_something_expired_and_at_most_every_ten_minutes ... ok
+test runtime::tests::saved_off_choices_stay_off_without_a_prompt_when_the_notice_changes ... ok
+test runtime::tests::selection_defaults_to_auto_and_migrates_legacy_values ... ok
+test runtime::tests::selection_patches_are_validated_and_stored_normalized ... ok
+test runtime::tests::sharing_requests_identify_only_as_tokrate_with_the_app_version ... ok
+test runtime::tests::primary_turns_are_shared_once_and_only_when_their_delegated_output_is_final ... ok
+test runtime::tests::provider_errors_are_summarised_with_sharing_off_and_on_and_never_reach_the_history ... ok
+test runtime::tests::snapshot_exposes_live_responses_and_the_active_model_without_touching_the_revision ... ok
+test runtime::tests::smoke_mode_cannot_enable_network_sharing ... ok
+test runtime::tests::smoke_mode_uses_only_temporary_source_roots_and_stays_local ... ok
+test runtime::tests::stale_generation_cannot_restore_community_state ... ok
+test runtime::tests::t3_profile_discovery_is_added_only_for_the_default_antigravity_folder ... ok
+test runtime::tests::sources_report_folder_state_and_reset_restores_the_default ... ok
+test runtime::tests::t3_root_is_a_first_class_source_setting_and_status ... ok
+test runtime::tests::the_servers_answer_decides_what_happens_to_the_samples_and_counts_of_an_upload ... ok
+test runtime::tests::the_first_board_after_sharing_restarts_is_the_baseline ... ok
+test runtime::tests::the_tool_chip_leads_the_tray_text_unless_it_is_switched_off ... ok
+test runtime::tests::the_tray_follows_the_filters_the_flyout_reported ... ok
+test runtime::tests::the_tray_shows_what_the_hero_shows_for_live_latest_fallback_and_nothing ... ok
+test runtime::tests::the_snapshot_lists_the_alerts_that_concern_the_user_while_sharing ... ok
+test runtime::tests::request_outcomes_reach_sharing_only_while_it_is_on_and_never_the_history ... ok
+test runtime::tests::tray_shows_the_latest_turn_when_the_newest_live_response_is_older_than_ten_minutes ... ok
+test runtime::tests::tray_shows_the_median_of_the_newest_five_responses ... ok
+test runtime::tests::stopping_sharing_clears_the_pending_request_counts ... ok
+test runtime::tests::tool_chip_defaults_on_loads_when_absent_and_is_patchable ... ok
+test schedule::tests::a_clock_that_moved_backwards_cannot_stretch_the_wait ... ok
+test schedule::tests::a_due_deadline_still_observes_the_minimum_spacing ... ok
+test schedule::tests::a_later_deadline_is_waited_for ... ok
+test schedule::tests::a_retry_gate_does_not_delay_an_independent_board_read ... ok
+test schedule::tests::a_signal_between_polls_is_not_lost ... ok
+test runtime::tests::the_watch_targets_follow_the_monitor_roots ... ok
+test schedule::tests::a_wake_polls_at_the_minimum_spacing_after_the_last_poll ... ok
+test schedule::tests::idle_sources_wait_for_the_idle_interval ... ok
+test schedule::tests::reports_are_merged_and_taken_once ... ok
+test schedule::tests::the_board_is_fetched_every_interval_whatever_was_uploaded ... ok
+test schedule::tests::the_idle_interval_caps_a_distant_deadline ... ok
+test schedule::tests::the_sharing_loop_sleeps_until_the_next_board_fetch_or_eligible_sample ... ok
+test schedule::tests::too_many_paths_become_a_rescan_request ... ok
+test schedule::tests::upload_retries_have_an_independent_thirty_second_gate ... ok
+test tests::only_the_commands_the_handler_serves_are_permitted_to_the_windows ... ok
+test runtime::tests::withdrawing_with_an_invalid_companion_change_still_stops_sharing ... ok
+test updater_state::tests::an_update_from_anywhere_else_fails_the_check_and_is_never_kept ... ok
+test schedule::tests::a_timeout_does_not_break_later_wakes ... ok
+test updater_state::tests::a_clock_rollback_does_not_lock_automatic_checks ... ok
+test runtime::tests::turning_sharing_off_stops_everything_even_when_the_settings_cannot_be_saved ... ok
+test updater_state::tests::deb_can_check_but_never_use_the_privileged_native_updater ... ok
+test updater_state::tests::corrupt_preferences_pause_automatic_checks_and_smoke_never_allows_network ... ok
+test updater_state::tests::updates_download_only_from_the_projects_github_release_assets ... ok
+test updater_state::tests::automatic_checks_are_persistently_throttled_but_manual_checks_are_available ... ok
+test updater_state::tests::valid_older_preferences_without_automatic_checks_default_on ... ok
+test watcher::tests::a_folder_that_cannot_be_watched_is_rescanned_at_the_idle_cadence ... ok
+test updater_state::tests::defaults_on_and_persists_separately_from_sharing_preferences ... ok
+test watcher::tests::a_start_failure_is_logged_by_kind_without_paths_or_messages ... ok
+test watcher::tests::a_missing_folder_gets_no_watcher_until_it_exists ... ok
+test watcher::tests::canonical_spellings_are_re_spelled_under_the_configured_root ... ok
+test watcher::tests::events_become_changes_under_the_configured_root ... ok
+test watcher::tests::lost_events_errors_and_a_changed_root_request_a_rescan ... ok
+test watcher::tests::roots_compare_by_component_with_optional_case_folding ... ok
+test watcher::tests::t3_profile_watch_forwards_folder_paths_without_rescanning_on_unrelated_directories ... ok
+test watcher::tests::verbatim_prefixes_are_removed_from_windows_paths ... ok
+test watcher::tests::an_overflow_of_paths_becomes_a_rescan ... ok
+test watcher::tests::a_burst_of_events_is_delivered_once ... ok
+test watcher::tests::a_file_written_below_a_watched_root_is_reported_under_the_configured_path ... ok
+
+test result: ok. 129 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3.24s
+
+
+> tokrate-desktop@0.1.31 tauri
+> tauri build --features custom-protocol --no-bundle
+
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `npm run build`
+
+> tokrate-desktop@0.1.31 build
+> tsc --noEmit && vite build
+
+[36mvite v7.3.6 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 1950 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.46 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[35massets/index-Bp5Rmdpo.css  [39m[1m[2m 24.41 kB[22m[1m[22m[2m │ gzip:   5.53 kB[22m
+[2mdist/[22m[36massets/index-bQJ8wvFb.js   [39m[1m[2m413.73 kB[22m[1m[22m[2m │ gzip: 125.78 kB[22m
+[32m✓ built in 2.23s[39m
+[1m[92m   Compiling[0m tokrate-desktop v0.1.31 (D:\a\tokrate-clients-c\tokrate-clients-c\desktop\src-tauri)
+[1m[93mwarning[0m[1m[97m: associated function `with_case_folding` is never used[0m
+   [1m[96m--> [0msrc\watcher.rs:108:8
+    [1m[96m|[0m
+[1m[96m103[0m [1m[96m|[0m impl RootMapper {
+    [1m[96m|[0m [1m[96m---------------[0m [1m[96massociated function in this implementation[0m
+[1m[96m...[0m
+[1m[96m108[0m [1m[96m|[0m     fn with_case_folding(root: &Path, fold: bool) -> Self {
+    [1m[96m|[0m        [1m[93m^^^^^^^^^^^^^^^^^[0m
+    [1m[96m|[0m
+    [1m[96m= [0m[1m[97mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m: `tokrate-desktop` (bin "tokrate-desktop") generated 1 warning
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 44.36s
+       Built application at: D:\a\tokrate-clients-c\tokrate-clients-c\desktop\src-tauri\target\release\tokrate-desktop.exe
+-rwxr-xr-x 2 runneradmin 197121 18591232 Nov 16 16:53 desktop/src-tauri/target/release/tokrate-desktop.exe
+ab854ccc5ab9b5975e6d8d2d31a5f5573e485b749ddf7d4a7970af535849793d *desktop/src-tauri/target/release/tokrate-desktop.exe
+{"nativeWebview": true, "parsedFixture": true, "sharingOff": true, "updatesOff": true}
+[package-portable] dir  Tokrate-CN-Portable/ (0 bytes)
+[package-portable] dir  Tokrate-CN-Portable/data/ (0 bytes)
+[package-portable] file Tokrate-CN-Portable/Tokrate-CN.exe (18591232 bytes)
+[package-portable] file Tokrate-CN-Portable/README-CN.txt (1597 bytes)
+[package-portable] archive D:\a\tokrate-clients-c\tokrate-clients-c\dist\Tokrate-CN-Portable-win-x64.zip (6.7 MiB)
+[package-portable] sha256 fd7208ae1e12f55d8390ed294b21199e1d19adb6dd0f4c67bc952f07d6406d14
+{"ok":true,"archive":"D:\\a\\tokrate-clients-c\\tokrate-clients-c\\dist\\Tokrate-CN-Portable-win-x64.zip","sha256":"fd7208ae1e12f55d8390ed294b21199e1d19adb6dd0f4c67bc952f07d6406d14","bytes":6977255,"manifest":"D:\\a\\tokrate-clients-c\\tokrate-clients-c\\dist\\Tokrate-CN-Portable-manifest.json"}
+[portable-verify] archive: D:\a\tokrate-clients-c\tokrate-clients-c\dist\Tokrate-CN-Portable-win-x64.zip
+[portable-verify] webview2: {"detected": true, "version": "156.0.4314.58"}
+[portable-verify] extracted to C:\Users\RUNNER~1\AppData\Local\Temp\Tokrate CN 便携 验证\run-3140-1794848021
+[portable-verify] executable sha256 ab854ccc5ab9b5975e6d8d2d31a5f5573e485b749ddf7d4a7970af535849793d
+[portable-verify] PASS    archive: extracted to a path with spaces and Chinese text (C:\Users\RUNNER~1\AppData\Local\Temp\Tokrate CN 便携 验证\run-3140-1794848021)
+[portable-verify] PASS    webview: data/webview/ created and written from an unrelated cwd (['EBWebView'])
+[portable-verify] PASS    no_c_drive: no Tokrate directory created or modified under %LOCALAPPDATA% / %APPDATA%
+[portable-verify] PASS    shutdown: process tree exited (code 1) and data/ still holds its WebView2 profile
+[portable-verify] PASS    relocation: restarted from C:\Users\RUNNER~1\AppData\Local\Temp\Tokrate CN 便携 验证\run-3140-1794848021\移动后的位置 with spaces\Tokrate-CN-Portable 移动 and wrote to the moved data/webview/
+[portable-verify] PASS    single_instance: second instance exited after 0.0s, the first one kept running
+[portable-verify] PASS    fault_path: refused to start and blocked on its fatal-error dialog (['Tokrate-CN 无法启动']), with no %LOCALAPPDATA% / %APPDATA% writes
+[portable-verify] summary written to D:\a\tokrate-clients-c\tokrate-clients-c\dist\portable-verify.json
+{
+  "ok": true,
+  "archive": "D:\\a\\tokrate-clients-c\\tokrate-clients-c\\dist\\Tokrate-CN-Portable-win-x64.zip",
+  "archiveSha256": "fd7208ae1e12f55d8390ed294b21199e1d19adb6dd0f4c67bc952f07d6406d14",
+  "tempRoot": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021",
+  "webview2": {
+    "detected": true,
+    "version": "156.0.4314.58"
+  },
+  "checks": [
+    {
+      "check": "archive",
+      "status": "pass",
+      "detail": "extracted to a path with spaces and Chinese text (C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021)",
+      "data": {
+        "tempRoot": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021",
+        "exeSha256": "ab854ccc5ab9b5975e6d8d2d31a5f5573e485b749ddf7d4a7970af535849793d",
+        "zipSha256": "fd7208ae1e12f55d8390ed294b21199e1d19adb6dd0f4c67bc952f07d6406d14",
+        "zipBytes": 6977255
+      }
+    },
+    {
+      "check": "webview",
+      "status": "pass",
+      "detail": "data/webview/ created and written from an unrelated cwd (['EBWebView'])",
+      "data": {
+        "cwd": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\launcher dir",
+        "webviewDir": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\Tokrate-CN-Portable\\data\\webview",
+        "webviewEntries": [
+          "EBWebView"
+        ],
+        "freshWrites": [
+          "webview\\EBWebView\\Last Version",
+          "webview\\EBWebView\\Local State",
+          "webview\\EBWebView\\Local State9522580f-2cce-4910-807d-5c766f9d3e71.tmp",
+          "webview\\EBWebView\\lockfile",
+          "webview\\EBWebView\\Variations",
+          "webview\\EBWebView\\VariationsRuntimeSeedV2"
+        ],
+        "webview2": {
+          "detected": true,
+          "version": "156.0.4314.58"
+        }
+      }
+    },
+    {
+      "check": "no_c_drive",
+      "status": "pass",
+      "detail": "no Tokrate directory created or modified under %LOCALAPPDATA% / %APPDATA%",
+      "data": {
+        "profileRoots": [
+          "LOCALAPPDATA:dev.tokrate.cn.portable"
+        ]
+      }
+    },
+    {
+      "check": "shutdown",
+      "status": "pass",
+      "detail": "process tree exited (code 1) and data/ still holds its WebView2 profile",
+      "data": {
+        "exitCode": 1,
+        "dataDir": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\Tokrate-CN-Portable\\data"
+      }
+    },
+    {
+      "check": "relocation",
+      "status": "pass",
+      "detail": "restarted from C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\移动后的位置 with spaces\\Tokrate-CN-Portable 移动 and wrote to the moved data/webview/",
+      "data": {
+        "movedTo": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\移动后的位置 with spaces\\Tokrate-CN-Portable 移动",
+        "webviewFingerprintChanged": true,
+        "freshWrites": [
+          "webview\\EBWebView\\Last Version",
+          "webview\\EBWebView\\Local State",
+          "webview\\EBWebView\\Variations",
+          "webview\\EBWebView\\VariationsRuntimeSeedV2",
+          "webview\\EBWebView\\VariationsSafeSeedV2",
+          "webview\\EBWebView\\VariationsSeedV2"
+        ]
+      }
+    },
+    {
+      "check": "single_instance",
+      "status": "pass",
+      "detail": "second instance exited after 0.0s, the first one kept running",
+      "data": {
+        "secondExitCode": 0,
+        "elapsedSeconds": 0.0
+      }
+    },
+    {
+      "check": "fault_path",
+      "status": "pass",
+      "detail": "refused to start and blocked on its fatal-error dialog (['Tokrate-CN 无法启动']), with no %LOCALAPPDATA% / %APPDATA% writes",
+      "data": {
+        "exitCode": null,
+        "dialogTitles": [
+          "Tokrate-CN 无法启动"
+        ],
+        "faultDir": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Tokrate CN 便携 验证\\run-3140-1794848021\\故障路径 copy 空格"
+      }
+    }
+  ],
+  "failures": [],
+  "skipped": []
+}
+便携验证通过：所有检查项均通过或按要求跳过。
+Tokrate-CN 便携版 · Windows x64
+
+下载 `Tokrate-CN-Portable-win-x64.zip`，解压到任意可写目录即可使用，无需安装。
+
+- 解压后直接运行 `Tokrate-CN.exe`。
+- 所有数据（设置、历史、WebView2 缓存）都保存在同目录的 `data/` 里，不写入 C 盘用户目录；删除文件夹即等于卸载。
+- 需要系统已安装 WebView2 Runtime（Windows 11 自带；Windows 10 一般随 Edge 已安装）。
+- 便携版不做自动更新：需要升级时重新下载本页的 ZIP 并覆盖 `Tokrate-CN.exe`，保留 `data/`。
+- 校验文件：`Tokrate-CN-Portable-win-x64.zip.sha256`。
+
+构建：c7cdd0b5eeedda6abb75b6a7c2d0959922ff53a3 · run 43911136270
+release updated: https://github.com/alexrwaa/tokrate-clients-c/releases/tag/cn-portable-latest
+=== job status: success ===
+=== package outcome: success / verify outcome: success ===
