@@ -1,20 +1,12 @@
 import { useEffect, type ReactNode } from "react";
 import { ArrowLeft, ArrowUpRight, Check, FolderOpen, Minus, RotateCcw } from "lucide-react";
+import { useI18n, type Language } from "../i18n";
 import { client } from "../metrics";
 import { folderName, SOURCE_TITLES } from "../model/format";
-import {
-  BLOCKED_NOTICE,
-  DELEGATED_NOTICE,
-  PROMPT_CACHE_NOTICE,
-  REGION_NOTICE,
-  REQUEST_COUNT_NOTICE,
-  SURFACE_NOTICE,
-  THROTTLED_NOTICE,
-  SentExample,
-} from "./SharingChoice";
+import { SentExample } from "./SharingChoice";
 import { useStore } from "../store/store";
 import type { SourceId, SourceStatus } from "../store/types";
-import { Chip, Disclosure, StatusDot, Switch, useAppStore } from "./primitives";
+import { Chip, Disclosure, Segmented, StatusDot, Switch, useAppStore } from "./primitives";
 import { UpdatesSection } from "./Updates";
 
 function Section({
@@ -73,6 +65,7 @@ function SwitchRow({
 }
 
 function SourceRow({ source, turns }: { source: SourceStatus; turns: number }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const title = SOURCE_TITLES[source.id];
   return (
@@ -82,46 +75,74 @@ function SourceRow({ source, turns }: { source: SourceStatus; turns: number }) {
           <span>{title}</span>
           {source.found ? (
             <Chip tone="accent">
-              <Check size={12} aria-hidden="true" /> Found
+              <Check size={12} aria-hidden="true" /> {t("settings.found")}
             </Chip>
           ) : (
             <Chip>
-              <Minus size={12} aria-hidden="true" /> Not found
+              <Minus size={12} aria-hidden="true" /> {t("settings.notFound")}
             </Chip>
           )}
         </p>
         <p className="hint" title={source.root}>
-          {source.isDefault ? "Default folder" : "Custom folder"} ·{" "}
+          {source.isDefault ? t("settings.folderDefault") : t("settings.folderCustom")} ·{" "}
           {folderName(source.root)}
-          {turns > 0 && ` · ${turns} ${turns === 1 ? "turn" : "turns"} in 7 d`}
+          {turns > 0 &&
+            ` · ${t("settings.turnsIn7d", {
+              count: turns,
+              noun: t(turns === 1 ? "chart.turn" : "chart.turns"),
+            })}`}
         </p>
       </div>
       <div className="source-actions">
         <button
           type="button"
           className="btn btn-secondary btn-sm"
-          aria-label={`Choose ${title} folder`}
+          aria-label={t("settings.chooseFolder", { tool: title })}
           onClick={() => void store.chooseFolder(source.id)}
         >
           <FolderOpen size={16} aria-hidden="true" />
-          Choose…
+          {t("settings.choose")}
         </button>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
-          aria-label={`Reset ${title} folder to default`}
+          aria-label={t("settings.resetAria", { tool: title })}
           disabled={source.isDefault}
           onClick={() => void store.resetFolder(source.id)}
         >
           <RotateCcw size={16} aria-hidden="true" />
-          Reset to default
+          {t("settings.reset")}
         </button>
       </div>
     </li>
   );
 }
 
+/** Language switch: two options, applied on the spot and remembered in the portable profile. */
+function LanguageRow() {
+  const { t, language, setLanguage } = useI18n();
+  return (
+    <div className="switch-row language-row">
+      <div>
+        <p className="switch-label">{t("settings.language")}</p>
+        <p className="hint">{t("settings.languageHint")}</p>
+      </div>
+      <Segmented<Language>
+        label={t("settings.language")}
+        size="sm"
+        value={language}
+        onChange={(value) => setLanguage(value)}
+        options={[
+          { value: "zh-CN", label: t("settings.languageZh") },
+          { value: "en-US", label: t("settings.languageEn") },
+        ]}
+      />
+    </div>
+  );
+}
+
 export function SettingsView() {
+  const { t } = useI18n();
   const store = useAppStore();
   const snapshot = useStore(store, (s) => s.snapshot);
   const anchor = useStore(store, (s) => s.ui.settingsAnchor);
@@ -142,58 +163,55 @@ export function SettingsView() {
         <button
           type="button"
           className="icon-button"
-          aria-label="Back to dashboard"
+          aria-label={t("settings.back")}
           onClick={() => store.setView("home")}
         >
           <ArrowLeft size={20} aria-hidden="true" />
         </button>
-        <h1>Settings</h1>
+        <h1>{t("settings.title")}</h1>
       </header>
       <div className="scroll">
-        <Section id="settings-general" title="General">
+        <Section id="settings-general" title={t("settings.general")}>
           <SwitchRow
             id="show-speed"
-            label="Show speed in tray"
-            hint="The response speed of the model you are using, as in the dashboard: the median of its last 5 responses from the past 10 minutes while responses finish, otherwise the response speed of its latest turn. Shown in the tray tooltip and menu; adjacent tray text only on supported desktops. It shows — when nothing has been measured yet or monitoring is paused."
+            label={t("settings.showSpeed")}
+            hint={t("settings.showSpeedHint")}
             checked={settings.showSpeed}
             onChange={(showSpeed) => void store.patch({ showSpeed })}
           />
           <SwitchRow
             id="show-provider-badge"
-            label="Show provider badge"
-            hint="A filled circle with the provider's letter (A Anthropic, O OpenAI, X xAI, G Google, M Moonshot AI) next to the model: in the tray icon where the desktop allows icon updates, and in this window."
+            label={t("settings.showProviderBadge")}
+            hint={t("settings.showProviderBadgeHint")}
             checked={settings.showProviderBadge}
             onChange={(showProviderBadge) => void store.patch({ showProviderBadge })}
           />
           <SwitchRow
             id="show-tool-chip"
-            label="Show coding tool chip"
-            hint="Two letters for the coding tool (CX Codex, CC Claude Code, GB Grok Build, AG Antigravity, OC OpenCode, KC Kimi Code, T3 T3 Code) before the speed in the tray text, where the desktop shows adjacent text. The tray tooltip always names the tool."
+            label={t("settings.showToolChip")}
+            hint={t("settings.showToolChipHint")}
             checked={settings.showToolChip}
             onChange={(showToolChip) => void store.patch({ showToolChip })}
           />
           <SwitchRow
             id="monitoring"
-            label="Monitor coding-tool sessions"
+            label={t("settings.monitoring")}
             hint={snapshot.monitorStatus}
             checked={settings.monitoring}
             onChange={(monitoring) => void store.patch({ monitoring })}
           />
-          <p className="fine">
-            Pausing monitoring does not stop queued uploads. Turn sharing off to stop all
-            community requests.
-          </p>
+          <p className="fine">{t("settings.monitoringHint")}</p>
         </Section>
 
-        <Section id="settings-sharing" title="Sharing">
+        <Section id="settings-language" title={t("settings.languageSection")}>
+          <LanguageRow />
+        </Section>
+
+        <Section id="settings-sharing" title={t("settings.sharing")}>
           <SwitchRow
             id="sharing"
-            label="Share with community"
-            hint={
-              settings.sharing
-                ? "On. New turn measurements, with their response timing, are shared."
-                : "Off. Your dashboard keeps working locally."
-            }
+            label={t("settings.shareCommunity")}
+            hint={settings.sharing ? t("settings.sharingOn") : t("settings.sharingOff")}
             checked={settings.sharing}
             onChange={(enabled) => {
               if (enabled) store.setConsentSheet(true);
@@ -204,7 +222,7 @@ export function SettingsView() {
             <StatusDot tone={settings.sharing ? "good" : "muted"} />
             <span>
               {snapshot.status}
-              {snapshot.pending ? ` · ${snapshot.pending} queued` : ""}
+              {snapshot.pending ? t("settings.queued", { count: snapshot.pending }) : ""}
             </span>
           </p>
           <div className="row-actions">
@@ -214,37 +232,34 @@ export function SettingsView() {
               disabled={!settings.sharing}
               onClick={() => void store.retrySharing()}
             >
-              Retry sharing
+              {t("settings.retrySharing")}
             </button>
           </div>
           <SwitchRow
             id="error-notifications"
-            label="Notify me when contributors report provider errors on models I use"
+            label={t("settings.errorNotifications")}
             hint={
               settings.sharing
-                ? "A system notification when contributors report errors on a model you used in the last 7 days, and another when they stop (at most 3 per hour). Nothing extra is sent: the alerts come from the community board."
-                : "Turn on sharing to use this: the alerts come from the community board, which Tokrate fetches only while sharing is on."
+                ? t("settings.errorNotificationsOn")
+                : t("settings.errorNotificationsOff")
             }
             checked={settings.errorNotifications}
             onChange={(errorNotifications) => void store.patch({ errorNotifications })}
             disabled={!settings.sharing}
           />
           <p className="fine">
-            Contribution is off until you choose. No prompts, responses, code or local file
-            paths are uploaded. {REGION_NOTICE} {DELEGATED_NOTICE} {SURFACE_NOTICE} {PROMPT_CACHE_NOTICE} {REQUEST_COUNT_NOTICE} {THROTTLED_NOTICE} {BLOCKED_NOTICE} You can withdraw at any time: turning sharing off stops future
-            community requests and clears queued reports. Reports already received cannot be
-            recalled by the switch.
+            {t("settings.sharingFine")}{" "}
+            {t("sharing.noticeRegion")} {t("sharing.noticeDelegated")} {t("sharing.noticeSurface")}{" "}
+            {t("sharing.noticePromptCache")} {t("sharing.noticeRequestCount")}{" "}
+            {t("sharing.noticeThrottled")} {t("sharing.noticeBlocked")}
           </p>
-          <Disclosure label="See exactly what is sent">
+          <Disclosure label={t("settings.seeSent")}>
             <SentExample />
           </Disclosure>
         </Section>
 
-        <Section id="settings-sources" title="Sources">
-          <p className="hint">
-            Tokrate reads only usage numbers from the folders below. The full path stays on
-            this computer; hover a folder for it.
-          </p>
+        <Section id="settings-sources" title={t("settings.sources")}>
+          <p className="hint">{t("settings.sourcesHint")}</p>
           <ul className="source-list">
             {sources.map((s) => (
               <SourceRow key={s.id} source={s} turns={turnsBy(s.id)} />
@@ -252,14 +267,14 @@ export function SettingsView() {
           </ul>
         </Section>
 
-        <Section id="settings-updates" title="Updates">
+        <Section id="settings-updates" title={t("settings.updates")}>
           <UpdatesSection />
         </Section>
 
-        <Section id="settings-about" title="About and privacy">
+        <Section id="settings-about" title={t("settings.about")}>
           <div className="link-list">
             <button type="button" className="link-row" onClick={() => store.openHistory()}>
-              Full history
+              {t("settings.fullHistory")}
               <ArrowUpRight size={16} aria-hidden="true" />
             </button>
             <button
@@ -267,21 +282,17 @@ export function SettingsView() {
               className="link-row"
               onClick={() => store.openWebsite("privacy")}
             >
-              Privacy and methodology
+              {t("settings.privacy")}
               <ArrowUpRight size={16} aria-hidden="true" />
             </button>
             <button type="button" className="link-row" onClick={() => store.openWebsite("terms")}>
-              Terms
+              {t("settings.terms")}
               <ArrowUpRight size={16} aria-hidden="true" />
             </button>
           </div>
-          <p className="fine">
-            Local history keeps 7 days. Measurements use source-specific definitions and do not
-            rate answer quality or verify provider outages. Community data refreshes at most
-            every 30 seconds while sharing is on.
-          </p>
+          <p className="fine">{t("settings.aboutFine")}</p>
           <button type="button" className="btn btn-secondary quit" onClick={() => store.quit()}>
-            Quit Tokrate
+            {t("settings.quit")}
           </button>
         </Section>
       </div>

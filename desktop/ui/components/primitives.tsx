@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { ChevronDown, Info } from "lucide-react";
+import { t } from "../i18n";
 import { toolChip, toolChipStyle, toolLabel } from "../metrics";
 import { BADGE_LABEL, BADGE_LETTER, badgeFamily } from "../response";
 import { useStore, type AppStore } from "../store/store";
@@ -74,6 +75,7 @@ export function ProviderBadge({
   if (!enabled) return null;
   const family = badgeFamily(model, provider);
   const letter = BADGE_LETTER[family];
+  const label = family === "unknown" ? t("common.unknownProvider") : BADGE_LABEL[family];
   return (
     <svg
       className={`provider-badge badge-${family}`}
@@ -81,9 +83,9 @@ export function ProviderBadge({
       height={size}
       viewBox="0 0 20 20"
       role="img"
-      aria-label={BADGE_LABEL[family]}
+      aria-label={label}
     >
-      <title>{BADGE_LABEL[family]}</title>
+      <title>{label}</title>
       <circle cx="10" cy="10" r="10" className="badge-disc" />
       {letter && (
         <text x="10" y="14.2" textAnchor="middle" className="badge-letter">
@@ -266,7 +268,7 @@ export function Disclosure({
 
 /** The single ⓘ affordance that holds the longer caveats behind a number. */
 export function InfoDisclosure({
-  label = "About this number",
+  label = t("common.aboutNumber"),
   children,
 }: {
   label?: string;

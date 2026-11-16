@@ -8,6 +8,7 @@ import {
   type PointerEvent,
 } from "react";
 import { num, shortTime } from "../model/format";
+import { t, useI18n } from "../i18n";
 
 export interface TrendBucket {
   at: number;
@@ -74,6 +75,7 @@ export function TrendChart({
   /** What one observation is called in the tooltip ("turn", "request"). */
   noun?: string;
 }) {
+  useI18n();
   const [ref, width] = useWidth<HTMLDivElement>(348);
   const gradient = useId();
   const [active, setActive] = useState<number | null>(null);
@@ -140,14 +142,23 @@ export function TrendChart({
   };
 
   const point = active === null ? null : buckets[active];
+  const pointNoun = (count: number) =>
+    noun === "request"
+      ? t(count === 1 ? "chart.request" : "chart.requests")
+      : t(count === 1 ? "chart.turn" : "chart.turns");
   const pointText =
     point && point.value !== null
-      ? `${shortTime(point.at)} · ${[num(point.value, digits), unit].filter(Boolean).join(" ")} · ${point.count} ${point.count === 1 ? noun : `${noun}s`}`
+      ? t("chart.point", {
+          time: shortTime(point.at),
+          value: [num(point.value, digits), unit].filter(Boolean).join(" "),
+          count: point.count,
+          noun: pointNoun(point.count),
+        })
       : "";
   const labels =
     days === 1
-      ? ["24 h ago", "12 h ago", "Now"]
-      : ["7 d ago", "3.5 d ago", "Now"];
+      ? [t("chart.24hAgo"), t("chart.12hAgo"), t("chart.now")]
+      : [t("chart.7dAgo"), t("chart.3_5dAgo"), t("chart.now")];
   const gridValues = [0, top / 2, top];
 
   return (
@@ -157,7 +168,7 @@ export function TrendChart({
       style={{ height }}
       tabIndex={0}
       role="group"
-      aria-label={`${ariaLabel}. Missing observations are gaps. Use arrow keys to inspect values.`}
+      aria-label={t("chart.aria", { label: ariaLabel })}
       onPointerMove={onPointerMove}
       onPointerLeave={() => setActive(null)}
       onKeyDown={onKeyDown}

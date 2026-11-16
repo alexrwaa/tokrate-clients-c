@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useI18n } from "../i18n";
 import { useStore } from "../store/store";
 import { Disclosure, useAppStore } from "./primitives";
 
@@ -52,6 +53,31 @@ export const SENT_FIELDS = [
   "A random ID for each sample",
 ];
 
+const FIELD_KEYS = [
+  "sharing.field1",
+  "sharing.field2",
+  "sharing.field3",
+  "sharing.field4",
+  "sharing.field5",
+  "sharing.field6",
+  "sharing.field7",
+  "sharing.field8",
+  "sharing.field9",
+  "sharing.field10",
+  "sharing.field11",
+];
+
+const NOTICE_KEYS = [
+  "sharing.noticeRegion",
+  "sharing.noticeDelegated",
+  "sharing.noticeSurface",
+  "sharing.noticePromptCache",
+  "sharing.noticeRequestCount",
+  "sharing.noticeThrottled",
+  "sharing.noticePromptSize",
+  "sharing.noticeBlocked",
+];
+
 /** Explains the example's fields, what the model name is, and how precisely the time is sent. */
 export const FIELD_DESCRIPTION =
   "Region is derived by the server, not sent by the app. The Amazon Bedrock region (providerRegion) is the one the model id itself names and is null for every other route. Model names are sent as your coding tool reports them, so a custom deployment name is shared as is; a name with unusual characters is sent as “unknown”. Uploads are grouped after each five-minute period closes, with a one-minute wait and up to one extra minute of random delay shared by the group. Completed turns normally arrive about 1–7 minutes later; offline or unusually delayed collection can take longer. The completion time remains rounded to five minutes.";
@@ -61,11 +87,12 @@ export const FIELD_DESCRIPTION =
  * builds real requests (`example_request_json` in core/src/sharing.rs), so it cannot drift.
  */
 export function SentExample() {
+  const { t } = useI18n();
   const store = useAppStore();
   const { text, failed } = useStore(store, (s) => s.sentExample);
   return (
-    <pre className="payload" tabIndex={0} aria-label="Example payload with fake values">
-      {text ?? (failed ? "The example could not be loaded." : "Loading the example…")}
+    <pre className="payload" tabIndex={0} aria-label={t("sharing.exampleAria")}>
+      {text ?? (failed ? t("sharing.exampleError") : t("sharing.exampleLoading"))}
     </pre>
   );
 }
@@ -82,6 +109,7 @@ export function SharingChoice({
   headingId: string;
   fromOnboarding: boolean;
 }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -90,67 +118,49 @@ export function SharingChoice({
   return (
     <div className="choice">
       <h1 id={headingId} tabIndex={-1} ref={heading}>
-        We measure speed, not your conversations.
+        {t("sharing.title")}
       </h1>
-      <p className="lede">
-        Tokrate reads your local session logs to time each answer. The text stays on this
-        computer. If you contribute, only the numbers are sent: which model, how many tokens,
-        how many seconds.
-      </p>
+      <p className="lede">{t("sharing.lede")}</p>
       <p className="lede" id={`${headingId}-description`}>
-        Optional. Local monitoring and history work either way. Contributions join the public
-        board at tokrate.dev.
+        {t("sharing.lede2")}
       </p>
       <div className="share-lists">
         <div>
-          <h2>Sent for each new turn</h2>
+          <h2>{t("sharing.sentFor")}</h2>
           <ul>
-            {SENT_FIELDS.map((field) => (
-              <li key={field}>{field}</li>
+            {FIELD_KEYS.map((key) => (
+              <li key={key}>{t(key)}</li>
             ))}
           </ul>
         </div>
         <div>
-          <h2>Never sent</h2>
+          <h2>{t("sharing.neverSent")}</h2>
           <ul>
-            <li>Prompts and responses</li>
-            <li>Code</li>
-            <li>File paths</li>
-            <li>Account details</li>
+            <li>{t("sharing.prompts")}</li>
+            <li>{t("sharing.code")}</li>
+            <li>{t("sharing.paths")}</li>
+            <li>{t("sharing.account")}</li>
           </ul>
         </div>
       </div>
-      <p className="detail-fine region-notice">{REGION_NOTICE}</p>
-      <p className="detail-fine region-notice">{DELEGATED_NOTICE}</p>
-      <p className="detail-fine region-notice">{SURFACE_NOTICE}</p>
-      <p className="detail-fine region-notice">{PROMPT_CACHE_NOTICE}</p>
-      <p className="detail-fine region-notice">{REQUEST_COUNT_NOTICE}</p>
-      <p className="detail-fine region-notice">{THROTTLED_NOTICE}</p>
-      <p className="detail-fine region-notice">{PROMPT_SIZE_NOTICE}</p>
-      <p className="detail-fine region-notice">{BLOCKED_NOTICE}</p>
-      <Disclosure label="See exactly what is sent">
+      {NOTICE_KEYS.map((key) => (
+        <p className="detail-fine region-notice" key={key}>
+          {t(key)}
+        </p>
+      ))}
+      <Disclosure label={t("sharing.seeSent")}>
         <div className="details">
-          <p className="detail-fine">Example with obviously fake values:</p>
+          <p className="detail-fine">{t("sharing.exampleIntro")}</p>
           <SentExample />
-          <p className="detail-fine">{FIELD_DESCRIPTION}</p>
-          <p className="detail-fine">
-            A persistent pseudonymous signing key identifies this installation across reports.
-            Its private key stays in your operating system’s secure credential store, and
-            Tokrate creates or reads it only after you accept.
-          </p>
-          <p className="detail-fine">
-            Accepting starts community requests for new measurements and community results.
-            While data is early, published aggregates may be based on one contributing
-            installation. Turning sharing off stops future community requests and clears queued
-            reports; it does not remove reports already received. Automatic software update
-            checks use their separate setting.
-          </p>
+          <p className="detail-fine">{t("sharing.fieldDescription")}</p>
+          <p className="detail-fine">{t("sharing.signingKey")}</p>
+          <p className="detail-fine">{t("sharing.acceptNote")}</p>
           <p className="detail-fine links">
             <button type="button" className="inline-link" onClick={() => store.openWebsite("privacy")}>
-              Privacy notice
+              {t("sharing.privacyNotice")}
             </button>
             <button type="button" className="inline-link" onClick={() => store.openWebsite("terms")}>
-              Terms
+              {t("sharing.terms")}
             </button>
           </p>
         </div>
@@ -163,7 +173,7 @@ export function SharingChoice({
           className="btn btn-choice"
           onClick={() => void store.recordSharingChoice(true, fromOnboarding)}
         >
-          Yes, let's contribute
+          {t("sharing.accept")}
         </button>
         <button
           type="button"
@@ -171,7 +181,7 @@ export function SharingChoice({
           className="btn btn-choice"
           onClick={() => void store.recordSharingChoice(false, fromOnboarding)}
         >
-          Only for local use
+          {t("sharing.decline")}
         </button>
       </div>
     </div>

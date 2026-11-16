@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Tokrate",
+  "productName": "Tokrate-CN",
   "version": "0.1.31",
-  "identifier": "dev.tokrate.desktop",
+  "identifier": "dev.tokrate.cn.portable",
   "build": {
     "beforeBuildCommand": "npm run build",
     "devUrl": "http://127.0.0.1:51719",
@@ -12,7 +12,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Tokrate",
+        "title": "Tokrate-CN",
         "width": 380,
         "height": 640,
         "minWidth": 340,
@@ -36,12 +36,5 @@
     "shortDescription": "Observed Codex performance in your tray",
     "category": "DeveloperTool",
     "windows": { "nsis": { "installMode": "currentUser" } }
-  },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVDNDBCRURFMkY3REVDNTkKUldSWjdIMHYzcjVBWElRblJnTW5BUDF1bjBHSEM3amVFVzhHRlVUMXpVMGhwTTdPRE0xUXkraXMK",
-      "endpoints": ["https://tokrate.dev/updates/desktop/alpha.json"],
-      "windows": { "installMode": "passive" }
-    }
   }
 }

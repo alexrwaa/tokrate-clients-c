@@ -1,8 +1,7 @@
 import { ArrowLeft, Columns2 } from "lucide-react";
+import { t, useI18n } from "../i18n";
 import {
   clientLabel,
-  GROK_RESPONSE_EXPLANATION,
-  GROK_RESPONSE_NOTE,
   communityId,
   measurementTitle,
   parserVersion,
@@ -25,29 +24,28 @@ import {
 } from "../response";
 import type { ModelsView } from "../store/types";
 import type { EfficiencySort } from "../efficiency";
-import { EFFICIENCY_SHORT } from "../metrics";
 import { EfficiencyAbout, EfficiencyList } from "./Efficiency";
 import { Chip, ProviderBadge, Segmented, ToolNameChip, useAppStore } from "./primitives";
-
-const VIEW_OPTIONS: { value: ModelsView; label: string }[] = [
-  { value: "response", label: "Response speed" },
-  { value: "turn", label: "Turn speed" },
-  { value: "efficiency", label: EFFICIENCY_SHORT },
-];
 
 /**
  * Response speed ranks models across tools; Turn speed keeps one list per measurement group;
  * Efficiency ranks model and effort by the indicator over the last 7 d.
  */
 function ViewToggle() {
+  const { t } = useI18n();
   const store = useAppStore();
   const view = useStore(store, (s) => s.ui.modelsView);
+  const viewOptions: { value: ModelsView; label: string }[] = [
+    { value: "response", label: t("models.responseSpeed") },
+    { value: "turn", label: t("models.turnSpeed") },
+    { value: "efficiency", label: t("efficiency.short") },
+  ];
   return (
     <Segmented
-      label="Model speed measurement"
+      label={t("models.speedMeasurement")}
       size="sm"
       value={view}
-      options={VIEW_OPTIONS}
+      options={viewOptions}
       onChange={(v) => store.setModelsView(v)}
     />
   );
@@ -66,26 +64,31 @@ function ResponseModelRow({
   onSelect: () => void;
   detailed: boolean;
 }) {
+  useI18n();
   const fill =
     row.median !== null && max > 0 ? Math.min(100, Math.max(4, (row.median / max) * 100)) : 0;
-  const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   const grok = row.tools.includes("grok-build");
   const grokOnly = grok && row.tools.length === 1;
   const sub = row.turns
     ? [
-        count(row.turns, "turn", "turns"),
+        t(row.turns === 1 ? "count.turn" : "count.turns", { n: row.turns }),
         grokOnly
-          ? count(row.responses, "model call", "model calls")
-          : count(row.responses, "response", "responses"),
+          ? t(row.responses === 1 ? "count.modelCall" : "count.modelCalls", { n: row.responses })
+          : t(row.responses === 1 ? "count.response" : "count.responses", { n: row.responses }),
       ].join(" · ")
     : row.untimed
-      ? "No per-response timing yet"
-      : "Collecting data";
+      ? t("models.noTiming")
+      : t("models.collecting");
   const title = [
-    `${row.model.model ?? "Unknown model"} · ${providerName(row.model.provider)}`,
-    `Response speed · median of ${count(row.turns, "turn", "turns")} in 24 h`,
-    row.untimed ? `${count(row.untimed, "turn", "turns")} without response timing` : null,
-    grok ? `${GROK_RESPONSE_NOTE}\n${GROK_RESPONSE_EXPLANATION}` : null,
+    t("models.rowTitle", {
+      model: row.model.model ?? t("common.unknownModel"),
+      provider: providerName(row.model.provider),
+    }),
+    t("models.rowMedian", { count: t("count.turns", { n: row.turns }) }),
+    row.untimed
+      ? t("models.turnsWithoutTiming", { count: t("count.turns", { n: row.untimed }) })
+      : null,
+    grok ? `${t("metric.grokNote")}\n${t("metric.grokExplanation")}` : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -101,11 +104,11 @@ function ResponseModelRow({
         <span className="model-main">
           <span className="model-name">
             <ProviderBadge model={row.model.model} provider={row.model.provider} size={16} />
-            <span className="model-name-text">{row.model.model ?? "Unknown model"}</span>
+            <span className="model-name-text">{row.model.model ?? t("common.unknownModel")}</span>
             {row.tools.map((id) => (
               <ToolNameChip key={id} tool={id} />
             ))}
-            {row.hasSubagent && <Chip title="Includes Subagent work">Subagent</Chip>}
+            {row.hasSubagent && <Chip title={t("models.includesSubagent")}>{t("models.subagent")}</Chip>}
           </span>
           <span className="model-sub">
             {sub}
@@ -143,13 +146,25 @@ function ModelRow({
   detailed: boolean;
   community: number | null;
 }) {
+  useI18n();
   const { sample, stats, qualifier } = row;
   const median = stats.throughput.median;
   const fill = median !== null && max > 0 ? Math.min(100, Math.max(4, (median / max) * 100)) : 0;
   const title = [
-    `${modelName(sample)} · ${clientLabel(sample)} ${sample.clientVersion ?? "version unknown"}`,
-    `${measurementTitle(sample)} · ${parserVersion(sample)} / ${metricVersion(sample)}`,
-    `${stats.throughput.count} turns with turn speed · ${stats.ttft.count} with first-token time`,
+    t("models.cohortTitle", {
+      model: modelName(sample),
+      tool: clientLabel(sample),
+      version: sample.clientVersion ?? t("metric.versionUnknown"),
+    }),
+    t("models.cohortDefinition", {
+      measurement: measurementTitle(sample),
+      parser: parserVersion(sample),
+      metric: metricVersion(sample),
+    }),
+    t("models.cohortCounts", {
+      turns: t("count.turns", { n: stats.throughput.count }),
+      ttft: stats.ttft.count,
+    }),
   ].join("\n");
   return (
     <li>
@@ -163,18 +178,22 @@ function ModelRow({
         <span className="model-main">
           <span className="model-name">
             <span className="model-name-text">{modelName(sample)}</span>
-            <Chip tone={effortChip(sample) === "effort unknown" ? "neutral" : "accent"}>
+            <Chip tone={effortChip(sample) === t("common.unknownEffort") ? "neutral" : "accent"}>
               {effortChip(sample)}
             </Chip>
           </span>
           <span className="model-sub">
-            {[qualifier, `${stats.throughput.count} ${stats.throughput.count === 1 ? "turn" : "turns"}`]
+            {[qualifier, t("count.turns", { n: stats.throughput.count })]
               .filter(Boolean)
               .join(" · ")}
             {detailed && (
               <>
-                {stats.ttft.median !== null && <> · {num(stats.ttft.median)} s first token</>}
-                {community !== null && <> · community {num(community, 0)} tok/s</>}
+                {stats.ttft.median !== null && (
+                  <> · {t("models.firstTokenS", { value: num(stats.ttft.median) })}</>
+                )}
+                {community !== null && (
+                  <> · {t("models.communityValue", { value: num(community, 0) })}</>
+                )}
               </>
             )}
           </span>
@@ -210,6 +229,7 @@ function GroupHead({ group }: { group: CohortGroup }) {
 }
 
 export function YourModels({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const view = useStore(store, (s) => s.ui.modelsView);
   if (!dashboard.cohorts.length) return null;
@@ -219,20 +239,20 @@ export function YourModels({ dashboard }: { dashboard: Dashboard }) {
   return (
     <section className="models" aria-labelledby="your-models">
       <div className="section-head">
-        <h2 id="your-models">Your models</h2>
+        <h2 id="your-models">{t("models.yourModels")}</h2>
         <button
           type="button"
           className="text-button"
           onClick={() => void store.selectCohort("all")}
         >
           <Columns2 size={16} aria-hidden="true" />
-          Compare all
+          {t("models.compareAll")}
         </button>
       </div>
       <div className="view-toggle">
         <ViewToggle />
-        {view === "response" && <span className="muted-line">Median over 24 h</span>}
-        {view === "efficiency" && <span className="muted-line">Last 7 d</span>}
+        {view === "response" && <span className="muted-line">{t("models.median24")}</span>}
+        {view === "efficiency" && <span className="muted-line">{t("models.last7d")}</span>}
       </div>
       {view === "efficiency" ? (
         <>
@@ -283,20 +303,6 @@ export function YourModels({ dashboard }: { dashboard: Dashboard }) {
   );
 }
 
-const SORTS: { value: SortKey; label: string }[] = [
-  { value: "recent", label: "Most recent" },
-  { value: "throughput", label: "Higher turn speed" },
-  { value: "ttft", label: "Lower first token" },
-];
-const RESPONSE_SORTS: { value: ModelSort; label: string }[] = [
-  { value: "speed", label: "Higher response speed" },
-  { value: "recent", label: "Most recent" },
-];
-const EFFICIENCY_SORTS: { value: EfficiencySort; label: string }[] = [
-  { value: "efficiency", label: "Higher efficiency" },
-  { value: "recent", label: "Most recent" },
-];
-
 /** "Compare all": the model list becomes the content, with a sort control. */
 export function CompareAll({
   dashboard,
@@ -305,28 +311,42 @@ export function CompareAll({
   dashboard: Dashboard;
   board: Board | null;
 }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const sort = useStore(store, (s) => s.ui.sort);
   const view = useStore(store, (s) => s.ui.modelsView);
   const groups = dashboard.compareGroups;
   const community = communityMedians(board);
-  const dayLabel = dashboard.days === 1 ? "24 h" : "7 d";
+  const dayLabel = dashboard.days === 1 ? t("trend.range24") : t("trend.range7");
   const responseSort: ModelSort = sort === "recent" ? "recent" : "speed";
   const responseRows = sortModelRows(dashboard.modelRows, responseSort);
   const responseMax = niceMedianMax(responseRows);
   const efficiencySort: EfficiencySort = sort === "recent" ? "recent" : "efficiency";
+  const sorts: { value: SortKey; label: string }[] = [
+    { value: "recent", label: t("models.sortMostRecent") },
+    { value: "throughput", label: t("models.sortHigherTurn") },
+    { value: "ttft", label: t("models.sortLowerFirstToken") },
+  ];
+  const responseSorts: { value: ModelSort; label: string }[] = [
+    { value: "speed", label: t("models.sortHigherResponse") },
+    { value: "recent", label: t("models.sortMostRecent") },
+  ];
+  const efficiencySorts: { value: EfficiencySort; label: string }[] = [
+    { value: "efficiency", label: t("models.sortHigherEfficiency") },
+    { value: "recent", label: t("models.sortMostRecent") },
+  ];
   return (
     <section className="card compare" aria-labelledby="compare-title">
       <div className="section-head">
-        <h1 id="compare-title">All models</h1>
+        <h1 id="compare-title">{t("models.allModels")}</h1>
         <label className="sort">
-          <span className="visually-hidden">Sort models by</span>
+          <span className="visually-hidden">{t("models.sortBy")}</span>
           {view === "response" || view === "efficiency" ? (
             <select
               value={view === "efficiency" ? efficiencySort : responseSort}
               onChange={(e) => store.setSort(e.target.value === "recent" ? "recent" : "throughput")}
             >
-              {(view === "efficiency" ? EFFICIENCY_SORTS : RESPONSE_SORTS).map((s) => (
+              {(view === "efficiency" ? efficiencySorts : responseSorts).map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
@@ -334,7 +354,7 @@ export function CompareAll({
             </select>
           ) : (
             <select value={sort} onChange={(e) => store.setSort(e.target.value as SortKey)}>
-              {SORTS.map((s) => (
+              {sorts.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
@@ -348,10 +368,10 @@ export function CompareAll({
       </div>
       <p className="muted-line">
         {view === "response"
-          ? "Median response speed over the last 24 h."
+          ? t("models.medianResponse")
           : view === "efficiency"
-            ? "Efficiency indicator over your last 7 d, whatever the chart range."
-            : `Median turn speed over the last ${dayLabel}.`}
+            ? t("models.efficiencyScope")
+            : t("models.medianTurn", { range: dayLabel })}
       </p>
       {view === "efficiency" && <EfficiencyAbout badge />}
       {view === "efficiency" ? (
@@ -373,7 +393,7 @@ export function CompareAll({
             </ul>
           </div>
         ) : (
-          <p className="empty">Complete a supported coding-tool response to compare models.</p>
+          <p className="empty">{t("models.emptyResponse")}</p>
         )
       ) : groups.length ? (
         groups.map((group) => (
@@ -395,18 +415,18 @@ export function CompareAll({
           </div>
         ))
       ) : (
-        <p className="empty">Complete a supported coding-tool turn to compare models.</p>
+        <p className="empty">{t("models.emptyTurn")}</p>
       )}
       <p className="fine">
         {view === "efficiency"
-          ? "Each model and reasoning effort counts every coding tool, provider and version. Requests under 200 tokens are left out, and each group needs 20 eligible requests. It depends on what you ask each model to do, and this is not an answer-quality ranking."
+          ? t("models.fineEfficiency")
           : view === "response"
-          ? "Response speed pools each model's responses across coding tools and Subagent work. Grok Build records output per turn, so its value is an average over all model calls in a turn (hover a row for details). Different workloads affect these numbers, and this is not an answer-quality ranking."
-          : "Different workloads and measurement definitions affect these numbers. Subagent, Work-turn and whole-turn speeds are never ranked against each other, and this is not an answer-quality ranking."}
+          ? t("models.fineResponse")
+          : t("models.fineTurn")}
       </p>
       <button type="button" className="text-button back" onClick={() => void store.selectCohort("auto")}>
         <ArrowLeft size={16} aria-hidden="true" />
-        Back to Auto
+        {t("models.backToAuto")}
       </button>
     </section>
   );

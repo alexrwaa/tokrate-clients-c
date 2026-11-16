@@ -1,14 +1,14 @@
 import { client, measurementChip, type CohortRow, type Metric } from "../metrics";
 import { fallbackModel, providerName, sameModel, type ToolId } from "../response";
 import type { Dashboard } from "./dashboard";
-import { effortChip, modelName } from "./format";
+import { effortChip, effortWord, modelName } from "./format";
 
 /** Exact cohorts offered above "More models". */
 export const RECENT_MODEL_LIMIT = 5;
 
 /** "Model · effort · Subagent": a cohort without its version or provider qualifiers. */
 export const cohortBaseTitle = (m: Metric) =>
-  [modelName(m), effortChip(m).replace(" effort", ""), measurementChip(m)]
+  [modelName(m), effortWord(m.reasoningEffort), measurementChip(m)]
     .filter(Boolean)
     .join(" · ");
 

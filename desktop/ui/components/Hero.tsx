@@ -1,37 +1,51 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { GROK_RESPONSE_EXPLANATION, GROK_RESPONSE_NOTE, isGrokBuild, toolLabel } from "../metrics";
+import { t, useI18n } from "../i18n";
+import { isGrokBuild, toolLabel } from "../metrics";
 import type { Dashboard } from "../model/dashboard";
 import { effortChip, exactTime, num, signedPercent } from "../model/format";
 import { Gauge } from "./Gauge";
 import { Chip, InfoDisclosure, ProviderBadge } from "./primitives";
 
 /** Vocabulary definition shown next to the response-speed readout. */
-export const RESPONSE_DEFINITION =
-  "Output tokens per second while the model is responding — tools and your time excluded.";
+export const RESPONSE_DEFINITION = () => t("hero.definition");
 
 /** "last 5 responses · 2 min ago" for the live value; the newest turn's own timing otherwise. */
 export function heroCaption(dashboard: Dashboard): string {
   const { hero, heroRelative } = dashboard;
-  if (hero.value === null) return "Waiting for a response";
+  if (hero.value === null) return t("hero.waiting");
   if (hero.source === "live")
-    return `last ${hero.count} ${hero.count === 1 ? "response" : "responses"} · ${heroRelative}`;
-  return `latest turn · ${heroRelative}`;
+    return t(hero.count === 1 ? "hero.lastResponse" : "hero.lastResponses", {
+      n: hero.count,
+      ago: heroRelative ?? "",
+    });
+  return t("hero.latestTurn", { ago: heroRelative ?? "" });
 }
 
 export function Hero({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const { hero, responseDelta, activeKey, sample, liveLatest, scopeTools, heroTurn } = dashboard;
   const grokHero = hero.source === "turn" && isGrokBuild(heroTurn);
   const rounded = responseDelta ? Math.round(responseDelta.percent) : 0;
   const caption = heroCaption(dashboard);
-  const effort = sample ? effortChip(sample) : liveLatest?.reasoningEffort ? `${liveLatest.reasoningEffort} effort` : null;
+  const effort = sample
+    ? effortChip(sample)
+    : liveLatest?.reasoningEffort
+      ? t("common.effort", { effort: liveLatest.reasoningEffort })
+      : null;
+  const definition = t("hero.definition");
+  const grokNote = t("metric.grokNote");
   const label =
     hero.value === null
-      ? "No response yet"
-      : `Response speed ${num(hero.value)} tokens per second, ${caption}. ${RESPONSE_DEFINITION}${grokHero ? ` ${GROK_RESPONSE_NOTE}.` : ""}`;
-  const completedAt =
-    hero.at === null ? null : new Date(hero.at).toISOString();
+      ? t("hero.noResponseYet")
+      : t("hero.gaugeLabel", {
+          value: num(hero.value),
+          caption,
+          definition,
+          grok: grokHero ? ` ${grokNote}.` : "",
+        });
+  const completedAt = hero.at === null ? null : new Date(hero.at).toISOString();
   return (
-    <section className="hero" aria-label="Response speed">
+    <section className="hero" aria-label={t("hero.aria")}>
       <Gauge
         value={hero.value}
         max={dashboard.gaugeMax}
@@ -42,9 +56,9 @@ export function Hero({ dashboard }: { dashboard: Dashboard }) {
         <div className="hero-meta">
           <h1 className="hero-model">
             <ProviderBadge model={activeKey.model} provider={activeKey.provider} size={22} />
-            <span className="hero-model-name">{activeKey.model ?? "Unknown model"}</span>
+            <span className="hero-model-name">{activeKey.model ?? t("common.unknownModel")}</span>
             {effort && (
-              <Chip tone={effort === "effort unknown" ? "neutral" : "accent"}>{effort}</Chip>
+              <Chip tone={effort === t("common.unknownEffort") ? "neutral" : "accent"}>{effort}</Chip>
             )}
           </h1>
           <p className="hero-sub">
@@ -59,7 +73,10 @@ export function Hero({ dashboard }: { dashboard: Dashboard }) {
             {completedAt && (
               <>
                 <span aria-hidden="true">·</span>
-                <time dateTime={completedAt} title={`Updated ${exactTime(completedAt)}`}>
+                <time
+                  dateTime={completedAt}
+                  title={t("hero.updated", { time: exactTime(completedAt) })}
+                >
                   {dashboard.heroRelative}
                 </time>
               </>
@@ -68,48 +85,42 @@ export function Hero({ dashboard }: { dashboard: Dashboard }) {
           {responseDelta && (
             <p
               className={`delta ${rounded > 0 ? "delta-up" : rounded < 0 ? "delta-down" : ""}`}
-              title={`Your 24 h response-speed median is ${num(responseDelta.median)} tok/s across ${responseDelta.turns} turns`}
+              title={t("hero.deltaTitle", {
+                median: num(responseDelta.median),
+                turns: responseDelta.turns,
+              })}
             >
               {rounded > 0 && <ArrowUp size={16} aria-hidden="true" />}
               {rounded < 0 && <ArrowDown size={16} aria-hidden="true" />}
               <span>
                 {rounded === 0
-                  ? "On par with your 24 h median"
-                  : `${signedPercent(responseDelta.percent)} vs your 24 h median`}
+                  ? t("hero.onPar")
+                  : t("hero.vsMedian", { percent: signedPercent(responseDelta.percent) })}
               </span>
             </p>
           )}
           <p className="definition">
-            <span title={grokHero ? GROK_RESPONSE_EXPLANATION : undefined}>
-              {RESPONSE_DEFINITION}
-              {grokHero && ` ${GROK_RESPONSE_NOTE}.`}
+            <span title={grokHero ? t("metric.grokExplanation") : undefined}>
+              {definition}
+              {grokHero && ` ${grokNote}.`}
             </span>
-            <InfoDisclosure label="About response speed">
-              <strong>Response speed</strong> · Each API response is timed from the request that
-              triggered it (your prompt, a tool result or a notification) to the response&apos;s
-              last output record. Only responses with at least 200 output tokens count, so tiny
-              check-ins never move it. The large number is the median of your last 5 responses
-              from the past 10 minutes, or the newest turn&apos;s own responses when none are
-              live.
+            <InfoDisclosure label={t("hero.about")}>
+              <strong>{t("hero.aria")}</strong> · {t("hero.explanationA")}
               {grokHero && (
                 <>
                   <br />
-                  {GROK_RESPONSE_EXPLANATION}
+                  {t("metric.grokExplanation")}
                 </>
               )}
               <br />
-              Turn speed — a whole turn including tools and waiting — stays available as the
-              secondary measurement. Neither is streaming speed, and Tokrate never infers
-              streaming speed.
+              {t("hero.explanationB")}
             </InfoDisclosure>
           </p>
         </div>
       ) : (
         <div className="hero-meta">
           <p className="hero-empty">
-            {dashboard.hasRecords
-              ? "No response speed for this selection yet. Complete a response of at least 200 output tokens in Claude Code, Codex, T3 Code, Antigravity, OpenCode or Kimi Code."
-              : "Complete a response of at least 200 output tokens in a supported coding tool."}
+            {dashboard.hasRecords ? t("hero.emptyWithRecords") : t("hero.empty")}
           </p>
         </div>
       )}

@@ -196,17 +196,17 @@ pub async fn open_history(app: AppHandle) -> Result<(), String> {
     if let Some(window) = app.get_webview_window(HISTORY) {
         let _ = window.show();
         let _ = window.unminimize();
-        window.set_focus().map_err(|_| "Could not show history")?;
+        window.set_focus().map_err(|_| "无法显示历史记录窗口")?;
         return Ok(());
     }
     WebviewWindowBuilder::new(&app, HISTORY, WebviewUrl::App("index.html".into()))
-        .title("Tokrate history")
+        .title("Tokrate-CN 历史记录")
         .inner_size(960.0, 720.0)
         .min_inner_size(640.0, 480.0)
         .center()
         .build()
         .map(|_| ())
-        .map_err(|_| "Could not open history".into())
+        .map_err(|_| "无法打开历史记录窗口".into())
 }
 
 #[cfg(test)]

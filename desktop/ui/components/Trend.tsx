@@ -1,10 +1,5 @@
 import { useMemo } from "react";
 import {
-  EFFICIENCY_DEFINITION,
-  EFFICIENCY_INSUFFICIENT,
-  EFFICIENCY_NAME,
-  EFFICIENCY_SHORT,
-  GROK_RESPONSE_EXPLANATION,
   buckets,
   client,
   isGrokBuild,
@@ -12,6 +7,7 @@ import {
   toolLabel,
   type Metric,
 } from "../metrics";
+import { t, useI18n } from "../i18n";
 import type { Dashboard } from "../model/dashboard";
 import { num, signedPercent } from "../model/format";
 import { useStore } from "../store/store";
@@ -47,31 +43,29 @@ export function useTrendBuckets(
   );
 }
 
-const SPEED_HELP = "Response speed excludes tools and your time; turn speed covers the whole turn.";
-
 export function MetricToggle({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const metric = useStore(store, (s) => s.ui.chartMetric);
   const firstToken = supportsFirstToken(dashboard.sample);
+  const speedHelp = t("trend.speedHelp");
   return (
     <div className="metric-toggle">
       <Segmented
-        label="Chart metric"
+        label={t("trend.metric")}
         size="sm"
         value={chartCopy(dashboard, metric).metric}
         onChange={(v) => store.setChartMetric(v)}
         options={[
-          { value: "response", label: "Response speed", title: SPEED_HELP },
-          { value: "throughput", label: "Turn speed", title: SPEED_HELP },
+          { value: "response", label: t("trend.responseSpeed"), title: speedHelp },
+          { value: "throughput", label: t("trend.turnSpeed"), title: speedHelp },
           {
             value: "ttft",
-            label: "First token",
+            label: t("trend.firstToken"),
             disabled: !firstToken,
-            title: firstToken
-              ? undefined
-              : "First-token time is not captured for this coding tool",
+            title: firstToken ? undefined : t("trend.noFirstToken"),
           },
-          { value: "efficiency", label: EFFICIENCY_SHORT, title: EFFICIENCY_DEFINITION },
+          { value: "efficiency", label: t("efficiency.short"), title: t("efficiency.definition") },
         ]}
       />
     </div>
@@ -79,17 +73,18 @@ export function MetricToggle({ dashboard }: { dashboard: Dashboard }) {
 }
 
 export function RangeToggle() {
+  const { t } = useI18n();
   const store = useAppStore();
   const days = useStore(store, (s) => s.snapshot.settings.days);
   return (
     <Segmented
-      label="History range"
+      label={t("trend.range")}
       size="sm"
       value={String(days) as "1" | "7"}
       onChange={(v) => void store.setDays(v === "1" ? 1 : 7)}
       options={[
-        { value: "1", label: "24 h" },
-        { value: "7", label: "7 d" },
+        { value: "1", label: t("trend.range24") },
+        { value: "7", label: t("trend.range7") },
       ]}
     />
   );
@@ -102,8 +97,8 @@ export const responseSpeedUnavailable = (dashboard: Dashboard) =>
 /** Why there is no response speed: names the coding tool when its source records only whole turns. */
 export const responseUnavailableText = (sample: Metric | undefined) =>
   sample && client(sample) === "grok-build"
-    ? `No response speed for these ${toolLabel("grok-build")} turns: they were recorded before Tokrate 0.1.15.`
-    : "No response speed for this model yet.";
+    ? t("trend.noResponseGrok", { tool: toolLabel("grok-build") })
+    : t("trend.noResponse");
 
 /**
  * Chart copy for the chosen metric. `null` is automatic: Response, or Turn when the model has no
@@ -127,21 +122,21 @@ export function chartCopy(dashboard: Dashboard, metric: ChartMetric | null) {
     digits: effective === "efficiency" ? 0 : 1,
     noun: effective === "efficiency" ? "request" : "turn",
     title: {
-      response: "Response speed",
-      throughput: "Turn speed",
-      ttft: "First token",
-      efficiency: EFFICIENCY_NAME,
+      response: t("trend.responseSpeed"),
+      throughput: t("trend.turnSpeed"),
+      ttft: t("trend.firstToken"),
+      efficiency: t("efficiency.name"),
     }[effective],
     empty:
       effective === "ttft"
-        ? "No first-token times in this range"
+        ? t("trend.noFirstTokenRange")
         : effective === "response" && unavailable
           ? responseUnavailableText(dashboard.sample)
           : effective === "efficiency"
             ? efficiency.selected?.indicator != null || dashboard.isAll
-              ? "Not enough requests in this range"
-              : EFFICIENCY_INSUFFICIENT
-            : "Collecting data",
+              ? t("trend.notEnoughRequests")
+              : t("efficiency.insufficient")
+            : t("trend.collecting"),
     summary: {
       response: dashboard.responseSummary,
       throughput: dashboard.summary.throughput,
@@ -158,21 +153,22 @@ export function chartCopy(dashboard: Dashboard, metric: ChartMetric | null) {
 }
 
 export function Trend({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const metric = useStore(store, (s) => s.ui.chartMetric);
   const copy = chartCopy(dashboard, metric);
   const data = useTrendBuckets(dashboard, copy.metric);
   const { summary } = copy;
-  const dayLabel = dashboard.days === 1 ? "24 h" : "7 d";
+  const dayLabel = dashboard.days === 1 ? t("trend.range24") : t("trend.range7");
   // No evidence at all collapses to one status line instead of an empty chart.
   if (!dashboard.sample)
     return (
-      <section className="card status-card" aria-label="Trend">
-        <p>Collecting data</p>
+      <section className="card status-card" aria-label={t("trend.aria")}>
+        <p>{t("trend.collecting")}</p>
       </section>
     );
   return (
-    <section className="card trend" aria-label="Trend">
+    <section className="card trend" aria-label={t("trend.aria")}>
       <div className="card-head">
         <MetricToggle dashboard={dashboard} />
         <RangeToggle />
@@ -183,7 +179,7 @@ export function Trend({ dashboard }: { dashboard: Dashboard }) {
         days={dashboard.days}
         height={112}
         emptyMessage={copy.empty}
-        ariaLabel={`${copy.title} over the last ${dayLabel}`}
+        ariaLabel={t("trend.chartAria", { title: copy.title, range: dayLabel })}
         digits={copy.digits}
         noun={copy.noun}
       />
@@ -191,31 +187,35 @@ export function Trend({ dashboard }: { dashboard: Dashboard }) {
         {copy.metric === "efficiency" ? (
           dashboard.efficiency.selected?.indicator != null ? (
             <>
-              <strong>{dashboard.efficiency.selected.indicator}</strong> indicator ·{" "}
-              {summary.count} {summary.count === 1 ? "request" : "requests"} in 7 d
+              <strong>{dashboard.efficiency.selected.indicator}</strong>{" "}
+              {t("efficiency.indicatorWord")} · {t("count.requests", { n: summary.count })}{" "}
+              {t("trend.in7d")}
             </>
           ) : dashboard.efficiency.selected ? (
-            <>{requestsOfFloor(summary.count)} in 7 d</>
+            <>{requestsOfFloor(summary.count)}</>
           ) : (
-            <>Collecting data</>
+            <>{t("trend.collecting")}</>
           )
         ) : summary.count ? (
           <>
-            Median <strong>{num(summary.median)}</strong> {copy.unit} · {summary.count}{" "}
-            {summary.count === 1 ? "turn" : "turns"} in {dayLabel}
+            {t("trend.median")} <strong>{num(summary.median)}</strong> {copy.unit} ·{" "}
+            {t("trend.turnsInRange", {
+              count: summary.count,
+              noun: t(summary.count === 1 ? "chart.turn" : "chart.turns"),
+              range: dayLabel,
+            })}
             {copy.metric === "response" && dashboard.responseTotals.responses > 0 && (
               <>
                 {" "}
-                · {dashboard.responseTotals.responses}{" "}
-                {dashboard.responseTotals.responses === 1 ? "response" : "responses"}
+                · {t("count.responses", { n: dashboard.responseTotals.responses })}
               </>
             )}
           </>
         ) : (
-          <>Collecting data</>
+          <>{t("trend.collecting")}</>
         )}
       </p>
-      <Disclosure label="Details" className="trend-details">
+      <Disclosure label={t("trend.details")} className="trend-details">
         <TrendDetails dashboard={dashboard} />
       </Disclosure>
     </section>
@@ -245,7 +245,12 @@ function StatRow({
           {num(median)} {unit}
         </strong>
         <span>
-          min {num(min)} · max {num(max)} · {count} {count === 1 ? "turn" : "turns"}
+          {t("trend.minMax", {
+            min: num(min),
+            max: num(max),
+            count,
+            noun: t(count === 1 ? "chart.turn" : "chart.turns"),
+          })}
         </span>
       </dd>
     </div>
@@ -254,58 +259,65 @@ function StatRow({
 
 /** The numbers behind the headline: ranges, recent window, period change and baseline signals. */
 export function TrendDetails({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const { summary, recent15m, change, signals, sample } = dashboard;
-  const dayLabel = dashboard.days === 1 ? "24 h" : "7 d";
+  const dayLabel = dashboard.days === 1 ? t("trend.range24") : t("trend.range7");
   const firstToken = supportsFirstToken(sample);
   const pct = (v: number | null) => (v === null ? "—" : signedPercent(v));
   return (
     <div className="details">
       <dl className="stats">
         <StatRow
-          label={`Response speed · ${dayLabel}`}
+          label={t("trend.responseSpeedRange", { range: dayLabel })}
           unit="tok/s"
           {...dashboard.responseSummary}
         />
         <StatRow
-          label={`Turn speed · ${dayLabel}`}
+          label={t("trend.turnSpeedRange", { range: dayLabel })}
           unit="tok/s"
           {...summary.throughput}
         />
         {firstToken ? (
-          <StatRow label={`First token · ${dayLabel}`} unit="s" {...summary.ttft} />
+          <StatRow
+            label={t("trend.firstTokenRange", { range: dayLabel })}
+            unit="s"
+            {...summary.ttft}
+          />
         ) : (
           <div className="stat-row">
-            <dt>First token</dt>
+            <dt>{t("trend.firstToken")}</dt>
             <dd>
-              <span>Not captured for this coding tool</span>
+              <span>{t("trend.notCaptured")}</span>
             </dd>
           </div>
         )}
         <StatRow
-          label="Last 15 minutes · response speed"
+          label={t("trend.last15Response")}
           unit="tok/s"
           {...dashboard.recentResponse15m}
         />
         <StatRow
-          label="Last 15 minutes · turn speed"
+          label={t("trend.last15Turn")}
           unit="tok/s"
           {...recent15m.throughput}
         />
       </dl>
       <dl className="stats">
         <div className="stat-row">
-          <dt>{EFFICIENCY_NAME} · 7 d</dt>
+          <dt>{t("trend.efficiency7d")}</dt>
           <dd>
             {dashboard.efficiency.selected?.indicator != null ? (
               <>
-                <strong>{dashboard.efficiency.selected.indicator} indicator</strong>
-                <span>100 = a typical request</span>
+                <strong>
+                  {dashboard.efficiency.selected.indicator} {t("efficiency.indicatorWord")}
+                </strong>
+                <span>{t("trend.typical")}</span>
               </>
             ) : (
               <span>
                 {dashboard.efficiency.selected
                   ? requestsOfFloor(dashboard.efficiency.selected.turns)
-                  : `0 of ${EFFICIENCY_MIN_TURNS} requests`}
+                  : t("efficiency.requestsFloor", { turns: 0, min: EFFICIENCY_MIN_TURNS })}
               </span>
             )}
           </dd>
@@ -314,27 +326,29 @@ export function TrendDetails({ dashboard }: { dashboard: Dashboard }) {
       </dl>
       <EfficiencyAbout />
       <p className="detail-line">
-        <strong>24 h vs previous 24 h</strong>
+        <strong>{t("trend.vs24")}</strong>
         <span>
-          Response speed {pct(change.response)} · Turn speed {pct(change.throughput)}
-          {firstToken && <> · First token {pct(change.ttft)}</>}
+          {t("trend.vs24Line", {
+            response: pct(change.response),
+            turn: pct(change.throughput),
+          })}
+          {firstToken && t("trend.vs24FirstToken", { value: pct(change.ttft) })}
         </span>
-        <small>Needs 5 turns in each period.</small>
+        <small>{t("trend.needs5")}</small>
       </p>
       <p className="detail-line">
-        <strong>Your baseline</strong>
+        <strong>{t("trend.baseline")}</strong>
         <span>{signals.throughput}</span>
         {firstToken && <span>{signals.ttft}</span>}
-        <small>Your workload may have changed.</small>
+        <small>{t("trend.workload")}</small>
       </p>
       <p className="detail-line detail-fine">
-        Response speed pools this model&apos;s responses across coding tools.
-        {isGrokBuild(sample) && ` ${GROK_RESPONSE_EXPLANATION}`} Turn speed:{" "}
-        {sample ? measurementLabel(sample) : "Turn speed"}.
-        {firstToken && " First token is the wait Codex reports and does not claim first visible text."}{" "}
-        Bucket medians, gaps mean no turns. The efficiency indicator always covers your last 7 d;
-        its chart needs 3 requests per bucket. Different workloads and measurement definitions affect
-        these numbers; this is not an answer-quality ranking.
+        {t("trend.pools")}
+        {isGrokBuild(sample) && ` ${t("metric.grokExplanation")}`}{" "}
+        {t("trend.turnSpeedDef", {
+          measurement: sample ? measurementLabel(sample) : t("metric.turnSpeed"),
+        })}
+        {firstToken && ` ${t("trend.firstTokenNote")}`} {t("trend.bucketNote")}
       </p>
     </div>
   );

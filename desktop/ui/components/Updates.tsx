@@ -1,9 +1,11 @@
 import { ArrowUpRight } from "lucide-react";
+import { useI18n } from "../i18n";
 import { useStore } from "../store/store";
 import { useAppStore } from "./primitives";
 
 /** Update controls inside Settings. Checks never install; installing always needs a click. */
 export function UpdatesSection() {
+  const { t } = useI18n();
   const store = useAppStore();
   const update = useStore(store, (s) => s.update);
   const smoke = useStore(store, (s) => s.snapshot.smoke);
@@ -15,14 +17,15 @@ export function UpdatesSection() {
       : null;
   const modeMessage =
     mode === "manual"
-      ? "This Debian package checks for updates automatically when enabled. Download the .deb package and install it with your package manager."
+      ? t("updates.modeManual")
       : mode === "unavailable"
-        ? "Automatic updates are available in the signed Windows installer and Linux AppImage."
-        : "Update checks use Tokrate’s fixed alpha feed. Checks never install an update by themselves.";
+        ? t("updates.portable")
+        : t("updates.modeNative");
   return (
     <div className="updates">
       <p>
-        Installed version {prefs?.currentVersion ?? "unknown"}. {update.status}
+        {t("updates.installed", { version: prefs?.currentVersion ?? t("updates.unknown") })}{" "}
+        {update.status}
       </p>
       {prefs?.settingsWarning && (
         <p role="alert" className="banner banner-danger">
@@ -32,7 +35,7 @@ export function UpdatesSection() {
       {(mode === "native" || mode === "manual") && !smoke && (
         <div className="switch-row">
           <p className="switch-label" id="auto-updates-label">
-            Check automatically on launch and at most once every 24 hours
+            {t("updates.autoLabel")}
           </p>
           <button
             type="button"
@@ -46,25 +49,25 @@ export function UpdatesSection() {
           </button>
         </div>
       )}
-      {update.checkInFlight && <p role="status">Checking for updates…</p>}
+      {update.checkInFlight && <p role="status">{t("updates.checking")}</p>}
       {update.installInFlight &&
         (progress === null ? (
           <>
-            <progress aria-label="Update download progress" />
-            <p className="hint">Downloading the signed update…</p>
+            <progress aria-label={t("updates.progressAria")} />
+            <p className="hint">{t("updates.downloading")}</p>
           </>
         ) : (
           <>
-            <progress aria-label="Update download progress" max={100} value={progress}>
+            <progress aria-label={t("updates.progressAria")} max={100} value={progress}>
               {progress}%
             </progress>
-            <p className="hint">{progress}% downloaded</p>
+            <p className="hint">{t("updates.percent", { percent: progress })}</p>
           </>
         ))}
       {available && (
         <div className="update-available" role="status">
           <p>
-            <strong>Tokrate {available.version} is available.</strong>
+            <strong>{t("updates.available", { version: available.version })}</strong>
             {available.body ? ` ${available.body.slice(0, 400)}` : ""}
           </p>
           {mode === "manual" ? (
@@ -73,7 +76,7 @@ export function UpdatesSection() {
               className="btn btn-primary btn-sm"
               onClick={() => store.openWebsite("desktop-downloads")}
             >
-              Download update
+              {t("updates.download")}
               <ArrowUpRight size={16} aria-hidden="true" />
             </button>
           ) : mode === "native" ? (
@@ -83,7 +86,7 @@ export function UpdatesSection() {
               disabled={update.installInFlight}
               onClick={() => void store.installAvailableUpdate()}
             >
-              {update.installInFlight ? "Installing update…" : "Download and install"}
+              {update.installInFlight ? t("updates.installing") : t("updates.install")}
             </button>
           ) : null}
         </div>
@@ -97,7 +100,7 @@ export function UpdatesSection() {
             disabled={update.checkInFlight || update.installInFlight}
             onClick={() => void store.checkForUpdates(false)}
           >
-            Check for updates
+            {t("updates.check")}
           </button>
         </div>
       )}
@@ -108,7 +111,7 @@ export function UpdatesSection() {
             className="btn btn-secondary btn-sm"
             onClick={() => store.openWebsite("desktop-downloads")}
           >
-            Open desktop downloads
+            {t("updates.openDownloads")}
             <ArrowUpRight size={16} aria-hidden="true" />
           </button>
         </div>
@@ -119,6 +122,7 @@ export function UpdatesSection() {
 
 /** Compact banner above the dashboard when an update has been found. */
 export function UpdateBanner() {
+  const { t } = useI18n();
   const store = useAppStore();
   const update = useStore(store, (s) => s.update);
   if (!update.available || update.preferences?.mode === "unavailable") return null;
@@ -126,12 +130,8 @@ export function UpdateBanner() {
   return (
     <section className="banner banner-accent update-banner" role="status">
       <div>
-        <strong>Tokrate {update.available.version} is available.</strong>
-        <span>
-          {manual
-            ? "Download the .deb package and install it with your package manager."
-            : "Install when you’re ready. Updates never install automatically."}
-        </span>
+        <strong>{t("updates.available", { version: update.available.version })}</strong>
+        <span>{manual ? t("updates.bannerManual") : t("updates.bannerNative")}</span>
       </div>
       <div className="banner-actions">
         {manual ? (
@@ -140,7 +140,7 @@ export function UpdateBanner() {
             className="btn btn-primary btn-sm"
             onClick={() => store.openWebsite("desktop-downloads")}
           >
-            Download update
+            {t("updates.download")}
             <ArrowUpRight size={16} aria-hidden="true" />
           </button>
         ) : update.preferences?.mode === "native" ? (
@@ -150,7 +150,7 @@ export function UpdateBanner() {
             disabled={update.installInFlight}
             onClick={() => void store.installAvailableUpdate()}
           >
-            {update.installInFlight ? "Installing…" : "Install update"}
+            {update.installInFlight ? t("updates.installingShort") : t("updates.installUpdate")}
           </button>
         ) : null}
         <button
@@ -158,7 +158,7 @@ export function UpdateBanner() {
           className="btn btn-secondary btn-sm"
           onClick={() => store.openSettings("settings-updates")}
         >
-          Details
+          {t("updates.details")}
         </button>
       </div>
     </section>

@@ -4,6 +4,7 @@ mod board;
 mod deb_updates;
 mod flyout;
 mod notifier;
+mod portable;
 mod runtime;
 mod schedule;
 #[cfg(test)]
@@ -14,6 +15,7 @@ use flyout::{Area, FlyoutState};
 use runtime::{Runtime, SettingsPatch, Snapshot};
 use serde::Serialize;
 use std::{
+    path::PathBuf,
     sync::{Arc, Mutex},
     time::Duration,
 };
@@ -212,13 +214,13 @@ fn restart_after_update(app: tauri::AppHandle) {
 #[tauri::command]
 async fn choose_folder(app: tauri::AppHandle, source: String) -> Result<Snapshot, String> {
     let title = match source.as_str() {
-        "codex" => "Choose Codex sessions folder",
-        "claude-code" => "Choose Claude Code projects folder",
-        "grok-build" => "Choose Grok Build sessions folder",
-        "antigravity" => "Choose Antigravity data folder",
-        "opencode" => "Choose OpenCode data folder",
-        "kimi-code" => "Choose Kimi Code folder",
-        _ => return Err("Choose a supported source".into()),
+        "codex" => "选择 Codex 会话目录",
+        "claude-code" => "选择 Claude Code 项目目录",
+        "grok-build" => "选择 Grok Build 会话目录",
+        "antigravity" => "选择 Antigravity 数据目录",
+        "opencode" => "选择 OpenCode 数据目录",
+        "kimi-code" => "选择 Kimi Code 目录",
+        _ => return Err("请选择一个受支持的数据源".into()),
     };
     // The native dialog takes focus from the flyout; that must not dismiss it.
     let flyout = app.state::<FlyoutState>();
@@ -262,9 +264,9 @@ fn open_website(page: String) -> Result<(), String> {
         "privacy" => "https://tokrate.dev/privacy",
         "terms" => "https://tokrate.dev/terms",
         "desktop-downloads" => "https://tokrate.dev/download",
-        _ => return Err("Unsupported page".into()),
+        _ => return Err("不支持的页面".into()),
     };
-    open::that(url).map_err(|_| "Could not open your browser".into())
+    open::that(url).map_err(|_| "无法打开浏览器".into())
 }
 #[tauri::command]
 fn smoke_complete(
@@ -283,8 +285,36 @@ fn smoke_complete(
 fn quit(app: tauri::AppHandle) {
     app.exit(0)
 }
+/// Resolves and prepares the folder that holds every file Tokrate-CN writes, then points
+/// WebView2's profile at it. A failure here is fatal: the app never falls back to a system-drive
+/// folder. The smoke harness keeps its own isolated folder so a test run never touches it.
+fn startup_data_root(smoke: bool) -> Result<portable::DataRoot, String> {
+    let root = if smoke {
+        std::env::var_os("TOKRATE_SMOKE_DIR")
+            .map(PathBuf::from)
+            .ok_or_else(|| "Smoke runs need a TOKRATE_SMOKE_DIR folder".to_owned())?
+    } else {
+        portable::portable_root()?
+    };
+    let data = portable::prepare(root)?;
+    portable::initialize_webview_profile(&data.webview());
+    Ok(data)
+}
+
 fn main() {
     let smoke = std::env::args().any(|a| a == "--smoke-test");
+    let data = match startup_data_root(smoke) {
+        Ok(data) => data,
+        Err(message) => {
+            // A smoke run has no desktop to show a dialog on, and must not wait for one.
+            if smoke {
+                eprintln!("{message}");
+            } else {
+                portable::report_fatal(&message);
+            }
+            std::process::exit(1);
+        }
+    };
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             flyout::show(app, None)
@@ -321,37 +351,28 @@ fn main() {
             quit
         ])
         .setup(move |app| {
-            let dir = app.path().app_local_data_dir()?;
             let mut runtime = if smoke {
-                let dir =
-                    std::env::var_os("TOKRATE_SMOKE_DIR").ok_or("Smoke directory required")?;
-                Runtime::load_smoke(dir.into())?
+                Runtime::load_smoke(data.root().to_path_buf())?
             } else {
-                Runtime::load(dir)?
+                Runtime::load(data.root().to_path_buf())?
             };
             runtime.set_notifier(notifier::install(app.handle()));
             app.manage(Arc::new(Mutex::new(runtime)));
-            let update_dir = if smoke {
-                std::env::var_os("TOKRATE_SMOKE_DIR")
-                    .ok_or("Smoke directory required")?
-                    .into()
-            } else {
-                app.path().app_local_data_dir()?
-            };
-            let updates = UpdateState::load(update_dir, smoke).map_err(std::io::Error::other)?;
+            let updates =
+                UpdateState::load(data.root().to_path_buf(), smoke).map_err(std::io::Error::other)?;
             app.manage(Arc::new(Mutex::new(updates)));
             let dashboard =
-                MenuItem::with_id(app, "dashboard", "Open dashboard", true, None::<&str>)?;
-            let history = MenuItem::with_id(app, "history", "Full history", true, None::<&str>)?;
+                MenuItem::with_id(app, "dashboard", "打开仪表盘", true, None::<&str>)?;
+            let history = MenuItem::with_id(app, "history", "完整历史记录", true, None::<&str>)?;
             let speed =
-                MenuItem::with_id(app, "speed", "Waiting for a response", false, None::<&str>)?;
+                MenuItem::with_id(app, "speed", "等待响应中", false, None::<&str>)?;
             let website =
-                MenuItem::with_id(app, "website", "Open global stats", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit Tokrate", true, None::<&str>)?;
+                MenuItem::with_id(app, "website", "打开官方网站", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "退出 Tokrate-CN", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&dashboard, &history, &speed, &website, &quit])?;
             let tray = TrayIconBuilder::with_id("tokrate")
                 .icon(badge::default_icon()?)
-                .tooltip("Tokrate — Response speed")
+                .tooltip("Tokrate-CN — 响应吞吐率")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
@@ -400,7 +421,7 @@ fn main() {
             // A visible dashboard remains usable on Linux desktops without an indicator host.
             if tray.is_err() {
                 app.state::<Shared>().lock().unwrap().monitor_status =
-                    "Tray unavailable on this desktop. Keep this dashboard open.".into();
+                    "此桌面环境不支持托盘图标，请保持此窗口打开。".into();
             }
             // Windows and macOS: a compact, undecorated flyout that hides on blur. Linux and any
             // desktop without a tray keep an ordinary decorated window that is always reachable.

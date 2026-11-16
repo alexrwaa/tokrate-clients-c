@@ -14,7 +14,12 @@ def write_jsonl(path: pathlib.Path, records: list[dict]) -> None:
     path.write_text("\n".join(json.dumps(record) for record in records) + "\n")
 
 
-with tempfile.TemporaryDirectory(prefix="tokrate-native-smoke-") as temporary:
+# The portable build keeps WebView2's profile inside this folder, and its helper processes
+# can still hold a file there for a moment after the app exits. Clean-up is therefore
+# best effort: a leftover temp folder must not fail an otherwise passing smoke run.
+with tempfile.TemporaryDirectory(
+    prefix="tokrate-native-smoke-", ignore_cleanup_errors=True
+) as temporary:
     root = pathlib.Path(temporary)
     codex_root = root / "sessions"
     claude_root = root / "claude-projects"

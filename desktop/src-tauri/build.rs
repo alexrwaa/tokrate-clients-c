@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::fs;
 
 /// The application commands the bundled UI invokes (`generate_handler!` in `src/main.rs`). Only
 /// these are permitted: each needs its own `allow-<command>` permission in
@@ -26,25 +26,22 @@ const COMMANDS: &[&str] = &[
 ];
 
 fn main() {
-    let key_path = Path::new("../updater-public-key.txt");
-    println!("cargo:rerun-if-changed={}", key_path.display());
-    let key = fs::read_to_string(key_path)
-        .expect("desktop updater public key is required")
-        .trim()
-        .to_owned();
-    assert!(!key.is_empty(), "desktop updater public key is empty");
+    // Tokrate-CN Portable keeps no link to the upstream release channel: a new build replaces the
+    // executable in place, so an official auto-update must never overwrite the localisation or the
+    // portable data layout. These checks fail the build if the feed or the updater plugin is ever
+    // configured again.
     let config = fs::read_to_string("tauri.conf.json").expect("Tauri config is required");
     assert!(
-        config.contains(&format!("\"pubkey\": \"{key}\"")),
-        "Tauri updater public key must match desktop/updater-public-key.txt"
+        !config.contains("tokrate.dev/updates"),
+        "the portable build must not configure the upstream update feed"
     );
     assert!(
-        config.contains("https://tokrate.dev/updates/desktop/alpha.json"),
-        "Tauri updater endpoint must remain the fixed alpha feed"
+        !config.contains("\"updater\""),
+        "the portable build must not configure the updater plugin"
     );
     tauri_build::try_build(
         tauri_build::Attributes::new()
             .app_manifest(tauri_build::AppManifest::new().commands(COMMANDS)),
     )
-    .expect("failed to run the Tauri build script")
+    .expect("failed to run the Tauri build script");
 }

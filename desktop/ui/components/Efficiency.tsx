@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { t, useI18n } from "../i18n";
 import {
   EFFICIENCY_MIN_TURNS,
   efficiencyScaleMax,
@@ -8,61 +9,61 @@ import {
   type EfficiencyRow,
   type EfficiencySort,
 } from "../efficiency";
-import {
-  EFFICIENCY_DEFINITION,
-  EFFICIENCY_EXPLANATION,
-  EFFICIENCY_INSUFFICIENT,
-} from "../metrics";
 import { compactTokens, effortText, percentText } from "../model/format";
 import { Chip, InfoDisclosure, ProviderBadge } from "./primitives";
 
 /** "n of 20 requests" for a group that has not reached the floor yet. */
-export const requestsOfFloor = (turns: number) => `${turns} of ${EFFICIENCY_MIN_TURNS} requests`;
-const requestCount = (n: number) => `${n} ${n === 1 ? "request" : "requests"}`;
+export const requestsOfFloor = (turns: number) =>
+  t("efficiency.requestsFloor", { turns, min: EFFICIENCY_MIN_TURNS });
 
 /** The one-line definition, its ⓘ explanation and, in lists, the "Indicator" badge. */
 export function EfficiencyAbout({ badge = false }: { badge?: boolean }) {
+  const { t } = useI18n();
   return (
     <div className="eff-about">
-      {badge && <Chip tone="accent">Indicator</Chip>}
-      <span className="eff-about-text">{EFFICIENCY_DEFINITION}</span>
-      <InfoDisclosure label="About the efficiency indicator">{EFFICIENCY_EXPLANATION}</InfoDisclosure>
+      {badge && <Chip tone="accent">{t("efficiency.indicator")}</Chip>}
+      <span className="eff-about-text">{t("efficiency.definition")}</span>
+      <InfoDisclosure label={t("efficiency.about")}>{t("efficiency.explanation")}</InfoDisclosure>
     </div>
   );
 }
 
 /** The statistics behind one group's indicator, as `.stat-row`s for a `.stats` list. */
 export function EfficiencyDetailRows({ row }: { row: EfficiencyRow }) {
+  const { t } = useI18n();
   return (
     <>
       <div className="stat-row">
-        <dt>Eligible requests</dt>
+        <dt>{t("efficiency.eligible")}</dt>
         <dd>
           <strong>{row.turns}</strong>
-          <span>7 d · 200 tokens or more</span>
+          <span>{t("efficiency.eligibleHint")}</span>
         </dd>
       </div>
       <div className="stat-row">
-        <dt>Median tokens/request</dt>
+        <dt>{t("efficiency.medianTokens")}</dt>
         <dd>
           <strong>{compactTokens(row.medianTokens)}</strong>
           <span>
-            middle half {compactTokens(row.p25Tokens)}–{compactTokens(row.p75Tokens)}
+            {t("efficiency.middleHalf", {
+              p25: compactTokens(row.p25Tokens),
+              p75: compactTokens(row.p75Tokens),
+            })}
           </span>
         </dd>
       </div>
       <div className="stat-row">
-        <dt>Reasoning share</dt>
+        <dt>{t("efficiency.reasoningShare")}</dt>
         <dd>
           <strong>{percentText(row.reasoningShare)}</strong>
-          <span>median of output tokens</span>
+          <span>{t("efficiency.medianOutput")}</span>
         </dd>
       </div>
       <div className="stat-row">
-        <dt>Delegated share</dt>
+        <dt>{t("efficiency.delegatedShare")}</dt>
         <dd>
           <strong>{percentText(row.delegatedShare)}</strong>
-          <span>of all tokens, subagent work</span>
+          <span>{t("efficiency.allTokens")}</span>
         </dd>
       </div>
     </>
@@ -76,14 +77,18 @@ function EfficiencyListRow({
   row: EfficiencyRow;
   scaleMax: number;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const id = useId();
   const fill =
     row.indicator === null ? 0 : Math.min(100, Math.max(4, (row.indicator / scaleMax) * 100));
   const sub =
     row.indicator === null
-      ? "Not enough requests yet"
-      : `${compactTokens(row.medianTokens)} tokens/request · ${requestCount(row.turns)}`;
+      ? t("efficiency.notEnough")
+      : t("efficiency.tokensPerRequest", {
+          tokens: compactTokens(row.medianTokens),
+          count: t(row.turns === 1 ? "count.request" : "count.requests", { n: row.turns }),
+        });
   return (
     <li>
       <button
@@ -91,7 +96,10 @@ function EfficiencyListRow({
         className="model-row eff-row"
         aria-expanded={open}
         aria-controls={id}
-        title={`${row.model} · ${effortText(row.effort)}\nEfficiency indicator · 100 = a typical request`}
+        title={`${t("efficiency.rowTitle", {
+          model: row.model,
+          effort: effortText(row.effort),
+        })}\n${t("efficiency.rowTitleSub")}`}
         onClick={() => setOpen(!open)}
       >
         <span className="model-main">
@@ -108,7 +116,7 @@ function EfficiencyListRow({
           ) : (
             <span className="model-number">
               {row.indicator}
-              <small> indicator</small>
+              <small> {t("efficiency.indicatorWord")}</small>
             </span>
           )}
         </span>
@@ -144,17 +152,20 @@ export function EfficiencyList({
   sort: EfficiencySort;
   flush: boolean;
 }) {
+  const { t } = useI18n();
   const rows = sortEfficiencyRows(efficiency.rows, sort);
-  if (!rows.length) return <p className="empty">{EFFICIENCY_INSUFFICIENT}</p>;
+  if (!rows.length) return <p className="empty">{t("efficiency.insufficient")}</p>;
   const scaleMax = efficiencyScaleMax(rows);
   const tick = (100 / scaleMax) * 100;
   return (
     <div className="model-group">
-      {!efficiency.reference && <p className="muted-line eff-note">{EFFICIENCY_INSUFFICIENT}</p>}
+      {!efficiency.reference && (
+        <p className="muted-line eff-note">{t("efficiency.insufficient")}</p>
+      )}
       {efficiency.reference && (
         <div className="eff-scale" aria-hidden="true">
           <span className={tick > 85 ? "eff-scale-end" : undefined} style={{ left: `${tick}%` }}>
-            typical
+            {t("efficiency.typical")}
           </span>
         </div>
       )}

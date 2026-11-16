@@ -1,17 +1,27 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Check, Minus } from "lucide-react";
+import { useI18n } from "../i18n";
 import { SOURCE_TITLES } from "../model/format";
 import { useStore } from "../store/store";
 import type { SourceStatus } from "../store/types";
 import { Mark, useAppStore } from "./primitives";
 import { SharingChoice } from "./SharingChoice";
 
-const STEP_TITLES = ["Welcome", "Sharing", "Find Tokrate"];
+const STEP_TITLE_KEYS = [
+  "onboarding.stepWelcome",
+  "onboarding.stepSharing",
+  "onboarding.stepFinish",
+];
 
 function Steps({ step }: { step: number }) {
+  const { t } = useI18n();
+  const titles = STEP_TITLE_KEYS.map((key) => t(key));
   return (
-    <ol className="steps" aria-label={`Step ${step + 1} of 3: ${STEP_TITLES[step]}`}>
-      {STEP_TITLES.map((title, i) => (
+    <ol
+      className="steps"
+      aria-label={t("onboarding.stepAria", { step: step + 1, title: titles[step] })}
+    >
+      {titles.map((title, i) => (
         <li key={title} data-state={i === step ? "current" : i < step ? "done" : "todo"} aria-current={i === step ? "step" : undefined}>
           <span className="visually-hidden">{title}</span>
         </li>
@@ -25,18 +35,20 @@ function Step({ children }: { children: ReactNode }) {
 }
 
 function SourceStatusRow({ source }: { source: SourceStatus }) {
+  const { t } = useI18n();
   return (
     <li className="detected" data-found={source.found}>
       <span className="detected-icon" aria-hidden="true">
         {source.found ? <Check size={16} /> : <Minus size={16} />}
       </span>
       <span className="detected-name">{SOURCE_TITLES[source.id]}</span>
-      <span className="detected-state">{source.found ? "Found" : "Not found"}</span>
+      <span className="detected-state">{source.found ? t("onboarding.found") : t("onboarding.notFound")}</span>
     </li>
   );
 }
 
 function Welcome() {
+  const { t } = useI18n();
   const store = useAppStore();
   const sources = useStore(store, (s) => s.snapshot.sources) ?? [];
   const heading = useRef<HTMLHeadingElement>(null);
@@ -48,28 +60,21 @@ function Welcome() {
         <Mark size={56} />
       </div>
       <h1 id="onboarding-welcome" tabIndex={-1} ref={heading}>
-        Welcome to Tokrate
+        {t("onboarding.welcomeTitle")}
       </h1>
-      <p className="lede">
-        See how fast your coding model is right now, and which one is fastest. Tokrate reads
-        timing and token counts from the session files your coding tools write on this computer.
-        Prompts, responses and code are never retained, and nothing leaves this computer unless
-        you choose to share.
-      </p>
-      <h2 className="eyebrow">Detected on this computer</h2>
+      <p className="lede">{t("onboarding.welcomeLede")}</p>
+      <h2 className="eyebrow">{t("onboarding.detected")}</h2>
       <ul className="detected-list">
         {sources.map((s) => (
           <SourceStatusRow key={s.id} source={s} />
         ))}
       </ul>
       <p className="hint">
-        {sources.length && found === 0
-          ? "No coding tool folders found yet. You can choose folders later in Settings, and Tokrate starts measuring as soon as a turn completes."
-          : "Missing a tool? Choose its folder later in Settings."}
+        {sources.length && found === 0 ? t("onboarding.noFolders") : t("onboarding.missingTool")}
       </p>
       <div className="onboarding-actions">
         <button type="button" className="btn btn-primary" onClick={() => store.setOnboardingStep(1)}>
-          Continue
+          {t("onboarding.continue")}
         </button>
       </div>
     </Step>
@@ -77,6 +82,7 @@ function Welcome() {
 }
 
 function Finish() {
+  const { t } = useI18n();
   const store = useAppStore();
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus({ preventScroll: true }), []);
@@ -100,16 +106,10 @@ function Finish() {
         </svg>
       </div>
       <h1 id="onboarding-finish" tabIndex={-1} ref={heading}>
-        Find Tokrate in your tray
+        {t("onboarding.finishTitle")}
       </h1>
-      <p className="lede">
-        Tokrate keeps running quietly in your system tray, near the clock. Click its icon to open
-        this view, or right-click for the menu.
-      </p>
-      <p className="hint">
-        On some Linux desktops the tray icon sits in a panel or behind a menu. Closing this
-        window never quits Tokrate; use Quit in Settings or the tray menu.
-      </p>
+      <p className="lede">{t("onboarding.finishLede")}</p>
+      <p className="hint">{t("onboarding.finishHint")}</p>
       <div className="onboarding-actions">
         <button
           type="button"
@@ -119,7 +119,7 @@ function Finish() {
             store.hideFlyout();
           }}
         >
-          Done
+          {t("onboarding.done")}
         </button>
       </div>
     </Step>
@@ -128,6 +128,7 @@ function Finish() {
 
 /** First launch: welcome with detected sources, the sharing choice, and where to find Tokrate. */
 export function Onboarding() {
+  const { t } = useI18n();
   const store = useAppStore();
   const step = useStore(store, (s) => s.ui.onboardingStep);
   return (
@@ -142,7 +143,7 @@ export function Onboarding() {
             <SharingChoice headingId="onboarding-sharing" fromOnboarding />
             <div className="onboarding-back">
               <button type="button" className="text-button" onClick={() => store.setOnboardingStep(0)}>
-                Back
+                {t("onboarding.back")}
               </button>
             </div>
           </Step>
