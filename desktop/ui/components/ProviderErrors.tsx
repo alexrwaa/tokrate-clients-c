@@ -1,8 +1,8 @@
 import { CircleAlert, CircleCheck, Info } from "lucide-react";
+import { useI18n } from "../i18n";
 import {
   communityErrorLine,
   providerErrorLine,
-  SHARING_HINT,
 } from "../model/provider-errors";
 import { useStore } from "../store/store";
 import { useAppStore } from "./primitives";
@@ -13,6 +13,7 @@ import { useAppStore } from "./primitives";
  * be notified while that setting is off. Hidden when there is nothing to say.
  */
 export function ProviderErrors() {
+  const { t } = useI18n();
   const store = useAppStore();
   const snapshot = useStore(store, (s) => s.snapshot);
   const recovery = useStore(store, (s) => s.errorRecovery);
@@ -23,7 +24,7 @@ export function ProviderErrors() {
     { relevant: snapshot.relevantErrorAlerts, sharing, now },
     recovery,
   );
-  const hint = local && !sharing ? SHARING_HINT : null;
+  const hint = local && !sharing ? t("providerErrors.sharingHint") : null;
   if (!local && !community && !hint) return null;
   return (
     <div className="provider-errors-group">
@@ -50,7 +51,7 @@ export function ProviderErrors() {
               className="text-button"
               onClick={() => void store.patch({ errorNotifications: true })}
             >
-              Notify me
+              {t("providerErrors.notify")}
             </button>
           )}
         </p>

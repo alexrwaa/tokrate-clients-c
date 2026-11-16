@@ -1,4 +1,5 @@
 import { CODING_TOOLS, PROVIDER_LABELS, client, clientLabel, type Metric } from "../metrics";
+import { t } from "../i18n";
 import type { SourceId } from "../store/types";
 
 /** One decimal by default; an em dash when there is no value. */
@@ -12,20 +13,20 @@ export const readout = (v: number | null | undefined) =>
     : "—";
 
 export const exactTime = (value: string | number) => {
-  const t = typeof value === "string" ? Date.parse(value) : value;
-  return Number.isFinite(t) ? new Date(t).toLocaleString() : "Unavailable";
+  const time = typeof value === "string" ? Date.parse(value) : value;
+  return Number.isFinite(time) ? new Date(time).toLocaleString() : t("common.unavailable");
 };
 
 /** "Oct 4, 2:00 PM": compact bucket time for chart tooltips. */
-export const shortTime = (t: number) =>
-  Number.isFinite(t)
-    ? new Date(t).toLocaleString([], {
+export const shortTime = (time: number) =>
+  Number.isFinite(time)
+    ? new Date(time).toLocaleString([], {
         month: "short",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
       })
-    : "Unavailable";
+    : t("common.unavailable");
 
 /** "+12%" / "−8%" with a typographic minus. */
 export const signedPercent = (percent: number) => {
@@ -44,12 +45,17 @@ export const PROVIDER_TITLES: Record<string, string> = {
 };
 
 export const modelName = (m: Metric | undefined) =>
-  m?.model ?? "Unknown model";
+  m?.model ?? t("metric.unknownModel");
 
 /** "high effort", "effort unknown": the vocabulary word is part of the chip. */
 export const effortText = (effort: string | null | undefined) =>
-  effort && effort !== "unknown" ? `${effort} effort` : "effort unknown";
+  effort && effort !== "unknown"
+    ? t("common.effort", { effort })
+    : t("common.unknownEffort");
 export const effortChip = (m: Metric) => effortText(m.reasoningEffort);
+/** The bare effort word for titles, where the chip's label would be redundant. */
+export const effortWord = (effort: string | null | undefined) =>
+  effort && effort !== "unknown" ? effort : t("common.unknownEffort");
 
 /** Token counts compactly: 950, 4.9k, 12k, 1.2M. */
 export function compactTokens(v: number | null | undefined): string {
@@ -74,7 +80,7 @@ export const cohortSummary = (m: Metric, qualifier: string | null = null) =>
   [
     modelName(m),
     clientLabel(m),
-    m.reasoningEffort ? `${m.reasoningEffort} effort` : "effort unknown",
+    effortText(m.reasoningEffort),
     qualifier,
   ]
     .filter(Boolean)
@@ -84,7 +90,7 @@ export const cohortSummary = (m: Metric, qualifier: string | null = null) =>
 export function folderName(path: string): string {
   const trimmed = path.replace(/[\\/]+$/, "");
   const parts = trimmed.split(/[\\/]/).filter(Boolean);
-  if (!parts.length) return trimmed || "Default folder";
+  if (!parts.length) return trimmed || t("common.defaultFolder");
   const last = parts[parts.length - 1];
   const parent = parts[parts.length - 2];
   return parent ? `${parent}/${last}` : last;
