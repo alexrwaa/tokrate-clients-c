@@ -1,4 +1,5 @@
 import { Users } from "lucide-react";
+import { useI18n } from "../i18n";
 import { alertsForCohorts } from "../metrics";
 import {
   communityLine,
@@ -12,6 +13,7 @@ import { Chip, Disclosure, useAppStore } from "./primitives";
 
 /** One line about the community, shown only while sharing is on; the details sit behind a disclosure. */
 export function Community({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const settings = useStore(store, (s) => s.snapshot.settings);
   const board = useStore(store, (s) => s.snapshot.board);
@@ -28,47 +30,63 @@ export function Community({ dashboard }: { dashboard: Dashboard }) {
   );
   const summary = dashboard.isAll
     ? board
-      ? `${rows.length} ${rows.length === 1 ? "model" : "models"} published by the community`
+      ? t("community.published", {
+          count: t(rows.length === 1 ? "count.model" : "count.models", { n: rows.length }),
+        })
       : status
     : line
       ? null
       : board
-        ? "No community data for this model yet"
+        ? t("community.noData")
         : status;
+  const caution = line?.caution
+    ? line.caution === "Early data"
+      ? t("community.earlyData")
+      : t("community.olderData")
+    : board?.methodology?.publicationMode === "early_data"
+      ? t("community.earlyData")
+      : null;
 
   return (
-    <section className="card community" aria-label="Community">
+    <section className="card community" aria-label={t("community.aria")}>
       <div className="community-line">
         <Users size={18} aria-hidden="true" className="community-icon" />
         {line ? (
           <p>
             <span>
-              Community median <strong>{num(line.median, 0)}</strong> tok/s ·{" "}
-              {line.windowLabel}
+              {t("community.median", {
+                value: num(line.median, 0),
+                window: line.windowLabel,
+              })}
             </span>
             {line.position !== null && (
               <span className="community-position">
                 {line.position === 0
-                  ? "You're right at the median"
-                  : `You're ${Math.abs(line.position)}% ${line.position > 0 ? "faster" : "slower"}`}
+                  ? t("community.atMedian")
+                  : t(line.position > 0 ? "community.faster" : "community.slower", {
+                      percent: Math.abs(line.position),
+                    })}
               </span>
             )}
           </p>
         ) : (
           <p>{summary}</p>
         )}
-        {(line?.caution ?? (board?.methodology?.publicationMode === "early_data" ? "Early data" : null)) && (
-          <Chip tone="warn" title="Published from a small number of contributors">
-            {line?.caution ?? "Early data"}
+        {caution && (
+          <Chip tone="warn" title={t("community.earlyTitle")}>
+            {caution}
           </Chip>
         )}
       </div>
-      <Disclosure label="Community details">
+      <Disclosure label={t("community.details")}>
         <div className="details">
           {board ? (
             <p className="detail-fine">
-              Window {communityWindowLabel(board.window)} · Processing: {board.state ?? "unknown"} ·
-              Observations through {exactTime(board.dataAsOf ?? "")}
+              {t("community.window", {
+                window: communityWindowLabel(board.window),
+                state: board.state ?? t("common.unknown"),
+                time: exactTime(board.dataAsOf ?? ""),
+              })}
             </p>
           ) : (
             <p className="detail-fine">{status}</p>
@@ -76,40 +94,42 @@ export function Community({ dashboard }: { dashboard: Dashboard }) {
           {rows.map((c) => (
             <div className="community-row" key={c.id}>
               <div>
-                <strong>{c.model ?? "Unknown model"}</strong>
+                <strong>{c.model ?? t("common.unknownModel")}</strong>
                 <span>
-                  {c.reasoningEffort ?? "unknown"} effort · {c.contributors ?? 0} contributors ·{" "}
-                  {c.throughputTurns ?? c.turns ?? 0} turns
-                  {c.ttftTurns ? ` · ${c.ttftTurns} with first token` : ""}
+                  {c.reasoningEffort
+                    ? t("common.effort", { effort: c.reasoningEffort })
+                    : t("common.unknownEffort")}{" "}
+                  · {t("count.contributors", { n: c.contributors ?? 0 })} ·{" "}
+                  {t("count.turns", { n: c.throughputTurns ?? c.turns ?? 0 })}
+                  {c.ttftTurns ? ` · ${t("community.withFirstToken", { count: c.ttftTurns })}` : ""}
                 </span>
                 <span>
-                  Turn speed: {c.signals?.throughput?.state ?? "collecting data"}
-                  {c.ttftTurns ? ` · First token: ${c.signals?.ttft?.state ?? "collecting data"}` : ""}
+                  {t("community.turnSpeed", {
+                    state: c.signals?.throughput?.state ?? t("community.collecting"),
+                  })}
+                  {c.ttftTurns
+                    ? ` · ${t("community.firstToken", {
+                        state: c.signals?.ttft?.state ?? t("community.collecting"),
+                      })}`
+                    : ""}
                 </span>
               </div>
               <div className="community-numbers">
                 <strong>{num(c.medianThroughput)} tok/s</strong>
                 {typeof c.medianTtftMs === "number" && (
-                  <span>{num(c.medianTtftMs / 1000)} s first token</span>
+                  <span>{t("community.firstTokenS", { value: num(c.medianTtftMs / 1000) })}</span>
                 )}
               </div>
             </div>
           ))}
-          {!rows.length && board && (
-            <p className="detail-fine">
-              No published observations for this exact model and effort.
-            </p>
-          )}
+          {!rows.length && board && <p className="detail-fine">{t("community.noPublished")}</p>}
           {alerts.map((a, i) => (
             <p className="detail-line" key={i}>
-              {a.message ?? `${a.metric ?? "Performance"}: ${a.state ?? "change observed"}`}
+              {a.message ??
+                `${a.metric ?? t("community.performance")}: ${a.state ?? t("community.changeObserved")}`}
             </p>
           ))}
-          <p className="detail-fine">
-            Missing alerts do not establish provider health. Geography, Fast mode
-            and answer quality are not measured. Data refreshes at most every 30
-            seconds while sharing is on.
-          </p>
+          <p className="detail-fine">{t("community.missingAlerts")}</p>
         </div>
       </Disclosure>
     </section>
