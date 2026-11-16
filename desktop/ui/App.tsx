@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
+import { useI18n } from "./i18n";
 import { client } from "./metrics";
 import { useDashboard } from "./model/use-dashboard";
 import { useStore, type AppStore } from "./store/store";
@@ -21,13 +22,14 @@ import { UpdateBanner } from "./components/Updates";
 export type WindowKind = "flyout" | "history";
 
 function Notices({ updates = true }: { updates?: boolean }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const error = useStore(store, (s) => s.error);
   return (
     <>
       {!store.bridge.native && (
         <p className="banner banner-warn" role="note">
-          Development preview · synthetic local data · no network sharing
+          {t("app.devPreview")}
         </p>
       )}
       {updates && <UpdateBanner />}
@@ -37,7 +39,7 @@ function Notices({ updates = true }: { updates?: boolean }) {
           <button
             type="button"
             className="icon-button icon-button-sm"
-            aria-label="Dismiss message"
+            aria-label={t("app.dismiss")}
             onClick={store.dismissError}
           >
             <X size={16} aria-hidden="true" />
@@ -50,20 +52,22 @@ function Notices({ updates = true }: { updates?: boolean }) {
 
 /** Shown in place of the community card when it cannot be drawn (the board is data from a server). */
 export function CommunityUnavailable() {
+  const { t } = useI18n();
   return (
-    <section className="card community" aria-label="Community">
+    <section className="card community" aria-label={t("app.communityAria")}>
       <p className="detail-fine" role="status">
-        Community data unavailable
+        {t("app.communityUnavailable")}
       </p>
     </section>
   );
 }
 
 function DataUnavailable() {
+  const { t } = useI18n();
   return (
-    <section className="card" aria-label="Measurements">
+    <section className="card" aria-label={t("app.measurementsAria")}>
       <p className="detail-fine" role="status">
-        These measurements could not be shown.
+        {t("app.measurementsUnavailable")}
       </p>
     </section>
   );
@@ -141,14 +145,15 @@ function SmokeProbe() {
 
 /** Last resort when a whole view fails to render: the way to settings and to a retry stays. */
 function WindowFailed({ retry, kind }: { retry: () => void; kind: WindowKind }) {
+  const { t } = useI18n();
   const store = useAppStore();
   return (
     <main className="scroll home-scroll">
       <section className="card" role="alert">
-        <p className="detail-fine">Something could not be shown.</p>
+        <p className="detail-fine">{t("app.windowFailed")}</p>
         <p className="links">
           <button type="button" className="inline-link" onClick={retry}>
-            Try again
+            {t("app.tryAgain")}
           </button>
           {kind === "flyout" && (
             <button
@@ -159,7 +164,7 @@ function WindowFailed({ retry, kind }: { retry: () => void; kind: WindowKind }) 
                 retry();
               }}
             >
-              Open settings
+              {t("app.openSettings")}
             </button>
           )}
         </p>
@@ -169,6 +174,8 @@ function WindowFailed({ retry, kind }: { retry: () => void; kind: WindowKind }) 
 }
 
 export function App({ store, kind }: { store: AppStore; kind: WindowKind }) {
+  // Subscribing here re-renders the whole shell when the language changes, so a switch is instant.
+  useI18n();
   useEffect(() => store.start(), [store]);
   const view = useStore(store, (s) => s.ui.view);
   const consentPending = useStore(store, (s) => s.snapshot.consentPromptRequired);
