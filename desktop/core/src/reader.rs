@@ -68,6 +68,23 @@ pub(crate) fn read_capped(file: File, cap: u64) -> io::Result<Option<Vec<u8>>> {
     Ok((bytes.len() as u64 <= cap).then_some(bytes))
 }
 
+/// Reads up to `count` bytes at `offset` through an already open handle: the same handle whose
+/// size and identity the caller just read, so the poll costs one open instead of two and the
+/// bytes always come from the file that was measured.
+fn read_at(file: &mut File, offset: u64, count: usize) -> io::Result<Vec<u8>> {
+    file.seek(SeekFrom::Start(offset))?;
+    let mut bytes = vec![0_u8; count];
+    let mut read = 0;
+    while read < count {
+        match file.read(&mut bytes[read..])? {
+            0 => break,
+            amount => read += amount,
+        }
+    }
+    bytes.truncate(read);
+    Ok(bytes)
+}
+
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Startup {
     Beginning,
@@ -286,9 +303,10 @@ impl IncrementalReader {
         if max_bytes == 0 {
             return Ok(Vec::new());
         }
-        // Query size and identity from an open handle. Windows path metadata can lag an
-        // append while another process still has the JSONL writer open.
-        let (_, metadata) = open_regular_file(&self.path)?;
+        // Query size and identity from an open handle, and read through that same handle: one
+        // open per poll instead of a size-probing open plus a reading one. Windows path metadata
+        // can lag an append while another process still has the JSONL writer open.
+        let (mut file, metadata) = open_regular_file(&self.path)?;
         let current_size = metadata.len();
         let current_identity = file_identity(&metadata);
         if current_size < self.resume_at.unwrap_or(self.offset)
@@ -317,13 +335,12 @@ impl IncrementalReader {
         }
         if self.startup == Startup::Header {
             self.is_caught_up = false;
-            self.prepare_recent_tail(current_size, max_bytes)?;
+            self.prepare_recent_tail(&mut file, current_size, max_bytes)?;
             return Ok(Vec::new());
         }
 
         let mut read_budget = max_bytes;
         if self.startup == Startup::Alignment {
-            let (mut file, _) = open_regular_file(&self.path)?;
             file.seek(SeekFrom::Start(self.offset.saturating_sub(1)))?;
             let mut previous = [0_u8; 1];
             let count = file.read(&mut previous)?;
@@ -338,7 +355,7 @@ impl IncrementalReader {
 
         let count = usize::try_from((current_size - self.offset).min(read_budget as u64))
             .unwrap_or(read_budget);
-        let bytes = self.read_at(self.offset, count)?;
+        let bytes = read_at(&mut file, self.offset, count)?;
         self.offset += bytes.len() as u64;
         self.bytes_read_last_poll += bytes.len();
         self.is_caught_up = self.offset >= current_size;
@@ -349,7 +366,12 @@ impl IncrementalReader {
         Ok(self.consume_complete_lines())
     }
 
-    fn prepare_recent_tail(&mut self, current_size: u64, max_bytes: usize) -> io::Result<()> {
+    fn prepare_recent_tail(
+        &mut self,
+        file: &mut File,
+        current_size: u64,
+        max_bytes: usize,
+    ) -> io::Result<()> {
         if self.tail_header == TailHeader::AnyTypedEvent {
             if let Some(resume_at) = self.resume_at.take() {
                 // Claude and Kimi Code records carry their own context, and a parser that has seen
@@ -362,7 +384,7 @@ impl IncrementalReader {
         }
         let count = usize::try_from((current_size - self.offset).min(max_bytes as u64))
             .unwrap_or(max_bytes);
-        let bytes = self.read_at(self.offset, count)?;
+        let bytes = read_at(file, self.offset, count)?;
         self.offset += bytes.len() as u64;
         self.bytes_read_last_poll = bytes.len();
         self.pending.extend_from_slice(&bytes);
@@ -425,21 +447,6 @@ impl IncrementalReader {
         };
         self.is_caught_up = self.startup == Startup::Ready && self.offset >= current_size;
         Ok(())
-    }
-
-    fn read_at(&self, offset: u64, count: usize) -> io::Result<Vec<u8>> {
-        let (mut file, _) = open_regular_file(&self.path)?;
-        file.seek(SeekFrom::Start(offset))?;
-        let mut bytes = vec![0_u8; count];
-        let mut read = 0;
-        while read < count {
-            match file.read(&mut bytes[read..])? {
-                0 => break,
-                amount => read += amount,
-            }
-        }
-        bytes.truncate(read);
-        Ok(bytes)
     }
 
     fn collect_parser_output(&mut self) {
