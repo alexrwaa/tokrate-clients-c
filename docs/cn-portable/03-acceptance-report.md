@@ -7,7 +7,8 @@
 - **本报告不包含任何未实际产生的构建/CI/真机结果**；没有证据的项目一律标注“未验证”
 
 > 本版相对初版的差异：第 6 节由“待 CI 回填”改为真实 run 证据；第 4 节由“无实测数据”改为 CI 实测数字；
-> 第 1 节逐项改为四态结论；新增 6.3 问题记录（两次失败 run）与 6.4 Release 状态。
+> 第 1 节逐项改为四态结论；新增 6.3 问题记录（失败 run 与发布触发问题）与 6.4 产物/Release 状态，
+> 其中 6.4.2 回填 `main` 分支的最终发布构建与校验值。
 > 本地化相关结论仍停留在初版快照，本次**未重跑**审计，故不升级为通过。
 
 ---
@@ -20,9 +21,10 @@
 | 成功 run 关键事实 | workflow `Tokrate-CN Windows x64 portable`；分支 `tokrate-cn`；head `09f5aeb09755df306b8b1cc21f00fae599cc3e2b`；job 结论 success；`package=success`、`verify=success` |
 | 失败 run #43903153446 | `Set up job` 即失败：`Unable to resolve action Swatinem/rust-cache@6323deb… unable to find version`；修复=固定 SHA 改为官方主版本标签 |
 | 失败 run #43903556973 | 测试与 smoke 断言全通过，但 `native-smoke.py` 退出时 `TemporaryDirectory` 清理抛 `PermissionError [Win32]`（WebView2 子进程仍持有 `webview\EBWebView\Default\Extension Rules\000003.log`）；修复=`ignore_cleanup_errors=True` |
-| 产物 ZIP | `Tokrate-CN-Portable-win-x64.zip`，6,977,246 字节（6.7 MiB），sha256 `9c3ed979912d0fcbcdab4521ad1d6a340c475ca0263fd9a0fd6dad0cac5976ff` |
-| 包内 EXE | 更名为 `Tokrate-CN.exe`；源 `tokrate-desktop.exe` 18,591,232 字节，sha256 `908cffb6cfc3335843ae1c2ca33eff02dc0da0a3f914d147352bb6b21bef18cd` |
-| Release | 本次为分支构建，**尚未产出**；tag `cn-portable-latest` 仅在推送 `main` 或 tag 时发布，链接占位 `{{RELEASE_URL}}` |
+| 产物 ZIP（分支构建） | `Tokrate-CN-Portable-win-x64.zip`，6,977,246 字节（6.7 MiB），sha256 `9c3ed979912d0fcbcdab4521ad1d6a340c475ca0263fd9a0fd6dad0cac5976ff` |
+| 包内 EXE（分支构建） | 更名为 `Tokrate-CN.exe`；源 `tokrate-desktop.exe` 18,591,232 字节，sha256 `908cffb6cfc3335843ae1c2ca33eff02dc0da0a3f914d147352bb6b21bef18cd` |
+| 最终发布构建（`main`） | run #43911136270（attempt 1），head `c7cdd0b`；ZIP 6,977,255 字节，sha256 `fd7208ae…6406d14`（详见 6.4.2） |
+| Release | **已发布**：tag `cn-portable-latest`，https://github.com/alexrwaa/tokrate-clients-c/releases/tag/cn-portable-latest |
 
 ---
 
@@ -32,7 +34,7 @@
 完成了构建、四组测试、native webview smoke 与 7 项便携运行期验证（0 skipped / 0 failed），产物与校验和齐全；
 剩余缺口集中在**必须人工或真机**的项目：与真实 Cockpit Tools 同跑、移动硬盘/U 盘运行、缩放与托盘/通知观感、
 中英切换视觉确认、与官方版同机共存实测，以及中文本地化仍未清零。
-可对外发布的唯一路径是合并到 `main` 触发 Release（本次分支构建不产出 Release）。
+可对外发布的 Release 已由 `main` 分支构建产出（tag `cn-portable-latest`，run #43911136270，6.4.2 节）。
 
 | 维度 | 状态 | 依据 |
 | --- | --- | --- |
@@ -251,17 +253,21 @@
 | 6 | `single_instance` | 第二个实例 0.0s 内自行退出，第一个实例存活 | 已验证通过 |
 | 7 | `fault_path` | `data` 被建成普通文件时，弹出标题为「Tokrate-CN 无法启动」的致命错误框，且没有任何 C 盘回退写入 | 已验证通过 |
 
-### 6.3 问题记录（两次失败 run，真实调试过程）
+### 6.3 问题记录（失败 run 与发布触发问题，真实调试过程）
 
 | run | 失败点 | 现象/原因 | 修复 |
 | --- | --- | --- | --- |
 | `43903153446` | `Set up job` | `Unable to resolve action Swatinem/rust-cache@6323deb… unable to find version`——固定的 action SHA 在仓库侧不可解析 | 把所有固定 action SHA 换成官方主版本标签：`checkout@v4` / `setup-node@v4` / `dtolnay/rust-toolchain@stable` / `Swatinem/rust-cache@v2` / `upload-artifact@v4` |
-| `43903556973` | `native-smoke.py` 退出清理 | Rust/测试/smoke 断言全部通过，但 `TemporaryDirectory` 清理抛 `PermissionError [Win32]`：WebView2 子进程仍持有 `webview\EBWebView\Default\Extension Rules\000003.log` | 改为 `ignore_cleanup_errors=True`（best effort 清理），不再把“进程未退干净”误判为 smoke 失败 |
+| `n/a`（无 run 产生） | squash merge 到 `main` | 合并 PR 到 `main` 的那次 squash merge **没有**触发 workflow，run 列表中没有 `main` 的记录；随后向 `main` 直接推送正常提交 `chore(cn): 页面标题改为 Tokrate-CN` 才触发了发布构建（#43911136270） | 无需改代码；操作层面补一次提交或手动 dispatch |
 
-> 说明：第二处修复是**放宽清理**，不是修复 WebView2 句柄释放时机。残留临时目录由 runner 回收，
+> 说明：`43903556973` 那次修复是**放宽清理**，不是修复 WebView2 句柄释放时机。残留临时目录由 runner 回收，
 > 不影响产物判定；但“WebView2 子进程在进程树结束后仍短暂持有文件”这一现象本身值得记录（见 R14）。
 
+> 结论：**发布依赖 `main` 上有实际 push 事件**，合并后建议追加一次提交或手动 `workflow_dispatch`。
+
 ### 6.4 产物与 Release 状态
+
+#### 6.4.1 分支构建（`tokrate-cn`，run #43905944040）
 
 | 项目 | 实测值 | 状态 |
 | --- | --- | --- |
@@ -269,9 +275,31 @@
 | ZIP sha256 | `9c3ed979912d0fcbcdab4521ad1d6a340c475ca0263fd9a0fd6dad0cac5976ff` | 已核对 |
 | 包内 EXE | 改名为 `Tokrate-CN.exe`；源 `tokrate-desktop.exe` 18,591,232 字节，sha256 `908cffb6cfc3335843ae1c2ca33eff02dc0da0a3f914d147352bb6b21bef18cd` | 已产出 |
 | artifact | `Tokrate-CN-Portable-win-x64-<run_number>`，保留 14 天 | 可下载（有期限） |
-| Release（tag `cn-portable-latest`） | 只在推送 `main` 或 tag 时发布；本次为分支构建，**尚未产出** | 待合并到 main 后由 Release 步骤产出，链接占位 `{{RELEASE_URL}}` |
 
-> 因此当前“可分发性”只到 artifact 层：链接 14 天后失效，对外发布必须走 `main` 或打 tag。
+> 该次为分支构建，只到 artifact 层：artifact 链接 14 天后失效，不构成对外发布物。
+
+#### 6.4.2 最终发布构建（`main` 分支）
+
+| 项目 | 实测值 |
+| --- | --- |
+| workflow run id / attempt | `43911136270` / attempt 1 |
+| 分支 / commit | `main` / `c7cdd0b5eeedda6abb75b6a7c2d0959922ff53a3` |
+| job 结论 | **success**；`package=success`、`verify=success`（便携验证 7 项仍全部 pass、0 skipped） |
+| runner 环境 | Windows X64；node v22.23.4；npm 10.9.9；rustc/cargo 1.100.0；Python 3.12.10；WebView2 Runtime 156.0.4314.58 |
+| 产物 | `Tokrate-CN-Portable-win-x64.zip`，**6,977,255 字节** |
+| ZIP sha256 | `fd7208ae1e12f55d8390ed294b21199e1d19adb6dd0f4c67bc952f07d6406d14`（与 GitHub Release API 的 asset digest 字段独立给出的值一致） |
+| 包内 `Tokrate-CN.exe` sha256 | `ab854ccc5ab9b5975e6d8d2d31a5f5573e485b749ddf7d4a7970af535849793d` |
+| 下载地址 | https://github.com/alexrwaa/tokrate-clients-c/releases/download/cn-portable-latest/Tokrate-CN-Portable-win-x64.zip |
+| 校验文件（同为资产） | https://github.com/alexrwaa/tokrate-clients-c/releases/download/cn-portable-latest/Tokrate-CN-Portable-win-x64.zip.sha256 |
+| Release 页面 | https://github.com/alexrwaa/tokrate-clients-c/releases/tag/cn-portable-latest |
+| Release 标题 / tag | 「Tokrate-CN 便携版（Windows x64）」/ `cn-portable-latest` |
+| 发布者 / 发布时间 | `github-actions[bot]` / `2026-11-16T16:53:50Z` |
+
+下载地址已用 HTTP HEAD 验证可匿名下载：返回 `302` 跳转签名资产，`Content-Disposition: attachment`，
+`Content-Length` 为 6,977,255，与上表字节数一致。
+
+说明：该 Release 由 CI 的 `gh release` 步骤自动创建/覆盖；后续升级只需重跑工作流，或重新下载后覆盖
+EXE 并保留 `data/` 目录。
 
 ### 6.5 明确未验证项（不得写成通过）
 
@@ -301,7 +329,7 @@
 | R9 | 低 | 便携版 UI 仍有“检查更新”入口但更新器不可用 | `main.rs:326`、`updater_state.rs:221` | 便携模式隐藏更新区或显示“便携版不自动更新” |
 | R10 | 信息 | `data/logs/` 为空目录，文档需说明 | `portable.rs:69` | 已在 04 文档注明“可能为空” |
 | R11 | 已关闭 | 前端测试 12/12 文件无法加载（`test-setup.ts` 导入路径错误） | 初版实测 `12 failed (12), Tests no tests` | 已修正；CI `npm test` 13 个文件全部通过 |
-| R12 | 中 | 分支构建不产出 Release，只能下载 14 天有效的 artifact | 6.4；`desktop.yml` 的 Release 步骤限定 `main`/tag | 合并到 `main` 或打 tag 后回填 `{{RELEASE_URL}}` |
+| R12 | 已关闭 | 分支构建不产出 Release（当时只能下载 14 天有效的 artifact） | 6.4.2：`main` 构建 run #43911136270 已产出 Release `cn-portable-latest` | 已由发布构建解决；后续升级按 6.4.2 说明重跑工作流或覆盖 EXE |
 | R13 | 中 | 五项人工/真机验收尚未进行（同跑、U 盘、缩放、语言与托盘观感、同机共存） | 6.5 的 U1–U6 | 合并前至少完成 U1、U6；余项写进发布说明 |
 | R14 | 低 | native-smoke 的临时目录清理降级为 best effort；WebView2 子进程会短暂持有 `EBWebView` 日志文件 | 失败 run #43903556973；`ignore_cleanup_errors=True` | 可在 smoke 结束前显式等待子进程退出；当前由 runner 回收，不影响判定 |
 | R15 | 信息 | 本报告的中文本地化数字仍是初版快照，CI 未包含 i18n 审计步骤 | 第 2 节补充说明 | 建议把 `i18n-coverage-audit.mjs` 加进 workflow 并设 0 硬编码门禁 |
@@ -340,7 +368,8 @@ cd desktop/core && cargo test --test cockpit_contention -- --nocapture   # 需 R
 **报告可信度声明：** 本文中的“已验证通过”分两类，均标注了来源：①在本机可复现的静态检查/脚本运行；
 ②GitHub Actions 成功 run #43905944040 的日志与产物（`09f5aeb`）。凡是需要人工目视、真机外设、
 真实 Cockpit 或同机共存的项目，一律标注为“未验证”（6.5 / 第 7 节），没有推定通过；
-分支构建未产出 Release，故不给出可用的 Release 链接，仅保留占位 `{{RELEASE_URL}}`。
+分支构建不产出 Release；本文给出的 Release 链接与校验值来自 `main` 发布构建
+（run #43911136270，6.4.2）。
 
 ---
 
