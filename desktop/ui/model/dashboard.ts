@@ -21,6 +21,7 @@ import {
   type Metric,
   type SortKey,
 } from "../metrics";
+import { t } from "../i18n";
 import { efficiencyDashboard } from "../efficiency";
 import {
   autoSelection,
@@ -244,14 +245,16 @@ export interface CommunityLine {
 }
 
 const windowLabels: Record<string, string> = {
-  "15m": "15 min",
-  "24h": "24 h",
-  "24hr": "24 h",
-  "7d": "7 d",
-  "30d": "30 d",
+  "15m": "community.window15",
+  "24h": "community.window24",
+  "24hr": "community.window24",
+  "7d": "community.window7",
+  "30d": "community.window30",
 };
-export const communityWindowLabel = (window: string | undefined) =>
-  windowLabels[window ?? "24h"] ?? window ?? "24 h";
+export const communityWindowLabel = (window: string | undefined) => {
+  const key = windowLabels[window ?? "24h"];
+  return key ? t(key) : (window ?? t("community.window24"));
+};
 
 export function communityLine(
   board: Board | null,
