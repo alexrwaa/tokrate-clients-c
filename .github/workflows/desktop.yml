@@ -1,30 +1,40 @@
-name: Windows and Linux clients
+name: Tokrate-CN Windows x64 portable
+
+# Single Windows x64 job. The cross-platform sources stay in the tree; only the
+# portable ZIP for Tokrate-CN is built and published here.
 on:
   push:
-    branches: [main]
-    paths: ['desktop/**', '.github/workflows/desktop.yml']
+    branches: [main, tokrate-cn]
+    tags: ['v*']
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop.yml'
   pull_request:
-    paths: ['desktop/**', '.github/workflows/desktop.yml']
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop.yml'
   workflow_dispatch:
+
+# Needed to publish the release and to force-push the ci-artifacts log branch.
 permissions:
-  contents: read
+  contents: write
+
 concurrency:
   group: desktop-${{ github.ref }}
-  cancel-in-progress: true
+  # Pull requests cancel each other; push runs must finish so their log reaches
+  # ci-artifacts and their release is published.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CI_LOG: ${{ github.workspace }}/.ci/ci.log
+  CARGO_TERM_COLOR: always
+  PYTHONIOENCODING: utf-8
+
 jobs:
-  native:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            bundles: nsis
-            artifact: windows-x64
-          - os: ubuntu-22.04
-            bundles: deb,appimage
-            artifact: linux-x64
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+  portable:
+    name: Windows x64 portable
+    runs-on: windows-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -35,75 +45,200 @@ jobs:
       - uses: dtolnay/rust-toolchain@89b12181fb390509a0842a86cc55eeb8eb928c1d # stable
         with:
           toolchain: stable
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcaf7e3dddab59af2b6 # v2.9.2
         with:
           cache-on-failure: true
           workspaces: |
             desktop/core
             desktop/src-tauri
-      - name: Linux native dependencies
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libdbus-1-dev patchelf xvfb dbus-x11
-      - run: npm ci --ignore-scripts
+      - name: Prepare CI log
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "$GITHUB_WORKSPACE/.ci"
+          {
+            echo "# Tokrate-CN portable build"
+            echo "event: $GITHUB_EVENT_NAME"
+            echo "ref: $GITHUB_REF"
+            echo "sha: $GITHUB_SHA"
+            echo "run: $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
+            echo "runner: $RUNNER_OS $RUNNER_ARCH"
+            node --version || echo "node unavailable"
+            npm --version || echo "npm unavailable"
+            cargo --version || echo "cargo unavailable"
+            rustc --version || echo "rustc unavailable"
+            python --version || echo "python unavailable"
+          } 2>&1 | tee -a "$CI_LOG"
+      - name: Report WebView2 runtime
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $keys = @(
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}',
+            'HKLM:\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}',
+            'HKCU:\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+          )
+          $found = $false
+          foreach ($key in $keys) {
+            if (Test-Path $key) {
+              $version = (Get-ItemProperty -Path $key -ErrorAction Stop).pv
+              "WebView2 runtime detected: $version"
+              Add-Content -LiteralPath $env:CI_LOG -Value "WebView2 runtime detected: $version"
+              $found = $true
+            }
+          }
+          if (-not $found) {
+            "WebView2 runtime not detected in the registry (the portable build needs it at runtime)."
+            Add-Content -LiteralPath $env:CI_LOG -Value "WebView2 runtime not detected in the registry."
+          }
+      - name: Install desktop dependencies
+        shell: bash
         working-directory: desktop
-      - run: npm test
+        run: |
+          set -o pipefail
+          npm ci --ignore-scripts 2>&1 | tee -a "$CI_LOG"
+      - name: Frontend unit tests
+        shell: bash
         working-directory: desktop
-      - run: npm run build
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee -a "$CI_LOG"
+      - name: Build frontend bundle
+        shell: bash
         working-directory: desktop
-      - run: cargo test --locked --manifest-path desktop/core/Cargo.toml
-      - run: cargo test --locked --release --features custom-protocol --manifest-path desktop/src-tauri/Cargo.toml
-      - name: Build platform installers
-        id: bundle_release
-        if: github.event_name != 'pull_request'
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee -a "$CI_LOG"
+      - name: Core tests
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --locked --manifest-path desktop/core/Cargo.toml -- --nocapture 2>&1 | tee -a "$CI_LOG"
+      - name: Desktop crate tests
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --locked --release --features custom-protocol --manifest-path desktop/src-tauri/Cargo.toml 2>&1 | tee -a "$CI_LOG"
+      - name: Build release executable (no installer bundle)
+        shell: bash
+        working-directory: desktop
+        run: |
+          set -o pipefail
+          npm run tauri -- build --features custom-protocol --no-bundle 2>&1 | tee -a "$CI_LOG"
+      - name: Verify release executable
         shell: bash
         env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          EXE: desktop/src-tauri/target/release/tokrate-desktop.exe
         run: |
-          if [[ -n "${TAURI_SIGNING_PRIVATE_KEY:-}" ]]; then
-            npm run tauri -- build --features custom-protocol --bundles ${{ matrix.bundles }} --config src-tauri/tauri.updater.conf.json
-            echo "flavor=signed" >> "$GITHUB_OUTPUT"
-          else
-            npm run tauri -- build --features custom-protocol --bundles ${{ matrix.bundles }}
-            echo "flavor=unsigned-test-build" >> "$GITHUB_OUTPUT"
+          set -o pipefail
+          if [ ! -f "$EXE" ]; then
+            echo "Expected executable is missing: $EXE" | tee -a "$CI_LOG"
+            exit 1
           fi
-        working-directory: desktop
-      - name: Build unsigned pull-request test installers
-        id: bundle_pr
-        if: github.event_name == 'pull_request'
+          ls -l "$EXE" 2>&1 | tee -a "$CI_LOG"
+          sha256sum "$EXE" 2>&1 | tee -a "$CI_LOG"
+      - name: Native webview smoke test
+        shell: bash
+        env:
+          TOKRATE_SMOKE_DIAGNOSTIC: ${{ runner.temp }}/tokrate-native-smoke-win-x64.json
         run: |
-          npm run tauri -- build --features custom-protocol --bundles ${{ matrix.bundles }}
-          echo "flavor=unsigned-test-build" >> "$GITHUB_OUTPUT"
-        working-directory: desktop
-      - name: Linux native webview smoke
-        id: linux_smoke
-        if: runner.os == 'Linux'
-        env:
-          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
-          TOKRATE_SMOKE_DIAGNOSTIC: ${{ runner.temp }}/tokrate-native-smoke-${{ matrix.artifact }}.json
-        run: xvfb-run -a dbus-run-session -- python3 desktop/scripts/native-smoke.py desktop/src-tauri/target/release/tokrate-desktop
-      - name: Windows native webview smoke
-        id: windows_smoke
-        if: runner.os == 'Windows'
-        env:
-          TOKRATE_SMOKE_DIAGNOSTIC: ${{ runner.temp }}/tokrate-native-smoke-${{ matrix.artifact }}.json
-        run: python desktop/scripts/native-smoke.py desktop/src-tauri/target/release/tokrate-desktop.exe
-      - name: Upload native installer packages
-        if: always() && (steps.bundle_release.outcome == 'success' || steps.bundle_pr.outcome == 'success')
+          set -o pipefail
+          python desktop/scripts/native-smoke.py desktop/src-tauri/target/release/tokrate-desktop.exe 2>&1 | tee -a "$CI_LOG"
+      - name: Package portable archive
+        id: package
+        shell: bash
+        run: |
+          set -o pipefail
+          node desktop/scripts/package-portable.mjs 2>&1 | tee -a "$CI_LOG"
+      - name: Verify portable archive
+        id: verify
+        shell: bash
+        run: |
+          set -o pipefail
+          python desktop/scripts/portable-verify.py dist/Tokrate-CN-Portable-win-x64.zip 2>&1 | tee -a "$CI_LOG"
+      - name: Upload portable artifact
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: tokrate-0.1.31-${{ matrix.artifact }}-${{ steps.bundle_release.outputs.flavor || steps.bundle_pr.outputs.flavor }}
+          name: Tokrate-CN-Portable-win-x64-${{ github.run_number }}
           path: |
-            desktop/src-tauri/target/release/bundle/nsis/*.exe*
-            desktop/src-tauri/target/release/bundle/deb/*.deb*
-            desktop/src-tauri/target/release/bundle/appimage/*.AppImage*
-          if-no-files-found: error
-          retention-days: 7
-      - name: Upload native smoke diagnostics
-        if: always() && (steps.linux_smoke.outcome == 'failure' || steps.windows_smoke.outcome == 'failure')
+            dist/Tokrate-CN-Portable-win-x64.zip
+            dist/Tokrate-CN-Portable-win-x64.zip.sha256
+            dist/Tokrate-CN-Portable-manifest.json
+            dist/portable-verify.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload smoke diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: tokrate-native-smoke-diagnostics-${{ matrix.artifact }}
-          path: ${{ runner.temp }}/tokrate-native-smoke-${{ matrix.artifact }}.json
-          if-no-files-found: warn
+          name: tokrate-native-smoke-diagnostics-win-x64-${{ github.run_number }}
+          path: ${{ runner.temp }}/tokrate-native-smoke-win-x64.json
+          if-no-files-found: ignore
           retention-days: 7
+      - name: Publish portable release
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: cn-portable-latest
+        run: |
+          set -o pipefail
+          NOTES="$GITHUB_WORKSPACE/.ci/release-notes.md"
+          mkdir -p "$GITHUB_WORKSPACE/.ci"
+          printf '%s\n' \
+            'Tokrate-CN 便携版 · Windows x64' \
+            '' \
+            '下载 `Tokrate-CN-Portable-win-x64.zip`，解压到任意可写目录即可使用，无需安装。' \
+            '' \
+            '- 解压后直接运行 `Tokrate-CN.exe`。' \
+            '- 所有数据（设置、历史、WebView2 缓存）都保存在同目录的 `data/` 里，不写入 C 盘用户目录；删除文件夹即等于卸载。' \
+            '- 需要系统已安装 WebView2 Runtime（Windows 11 自带；Windows 10 一般随 Edge 已安装）。' \
+            '- 便携版不做自动更新：需要升级时重新下载本页的 ZIP 并覆盖 `Tokrate-CN.exe`，保留 `data/`。' \
+            '- 校验文件：`Tokrate-CN-Portable-win-x64.zip.sha256`。' \
+            '' \
+            "构建：$GITHUB_SHA · run $GITHUB_RUN_ID" > "$NOTES"
+          cat "$NOTES" | tee -a "$CI_LOG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --title 'Tokrate-CN 便携版（Windows x64）' \
+              --notes-file "$NOTES"
+          else
+            gh release create "$TAG" \
+              --title 'Tokrate-CN 便携版（Windows x64）' \
+              --notes-file "$NOTES" \
+              --target "$GITHUB_SHA"
+          fi
+          gh release upload "$TAG" \
+            dist/Tokrate-CN-Portable-win-x64.zip \
+            dist/Tokrate-CN-Portable-win-x64.zip.sha256 \
+            --clobber 2>&1 | tee -a "$CI_LOG"
+          echo "release updated: https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG" | tee -a "$CI_LOG"
+      # Runs even when the build failed, so the failure reason and test output are
+      # readable from the ci-artifacts branch without downloading artifacts.
+      - name: Publish CI log to ci-artifacts branch
+        if: always()
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          if [ ! -d .git ]; then
+            echo "No checkout; skipping log publication."
+            exit 0
+          fi
+          if [ ! -f "$CI_LOG" ]; then
+            echo "No CI log written; skipping log publication."
+            exit 0
+          fi
+          echo "=== job status: ${{ job.status }} ===" >> "$CI_LOG"
+          echo "=== package outcome: ${{ steps.package.outcome }} / verify outcome: ${{ steps.verify.outcome }} ===" >> "$CI_LOG"
+          mkdir -p "$GITHUB_WORKSPACE/.ci"
+          cp "$CI_LOG" "$GITHUB_WORKSPACE/.ci/log-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.log"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f .ci
+          git commit -m "ci: portable build log $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT [skip ci]"
+          gh auth setup-git
+          git push --force origin "HEAD:ci-artifacts"
