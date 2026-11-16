@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Check, ChevronDown, Settings as SettingsIcon } from "lucide-react";
+import { t, useI18n } from "../i18n";
 import { client, clientLabel, toolChipStyle, toolLabel, type CohortRow } from "../metrics";
 import { autoSelection, modelSelection } from "../response";
 import type { Dashboard } from "../model/dashboard";
@@ -10,11 +11,6 @@ import { providerName, sortModelRows } from "../response";
 import { useStore } from "../store/store";
 import type { ProviderFilter, ToolFilter } from "../store/types";
 import { Mark, ProviderBadge, Segmented, ToolChip, useAppStore, useDismiss } from "./primitives";
-
-const TOOL_OPTIONS = [
-  { value: "all", label: "All" },
-  ...CLIENT_ORDER.map((id) => ({ value: id, label: SOURCE_TITLES[id], toolStyle: toolChipStyle(id) })),
-] satisfies { value: ToolFilter; label: string; toolStyle?: ReturnType<typeof toolChipStyle> }[];
 
 /** "Model · effort · Subagent · v1" on one line, as listed under More models. */
 export function cohortMenuTitle(row: CohortRow) {
@@ -35,19 +31,23 @@ export function pickerTool(dashboard: Dashboard): string | null {
 }
 
 const autoModelName = (dashboard: Dashboard) =>
-  dashboard.activeKey ? (dashboard.activeKey.model ?? "Unknown model") : null;
+  dashboard.activeKey ? (dashboard.activeKey.model ?? null) : null;
 
 /** Picker button text; the coding tool is the chip beside it, see `pickerAccessibleLabel`. */
 export function pickerLabel(dashboard: Dashboard) {
   const { mode } = dashboard;
-  if (mode.kind === "all") return "All models";
+  if (mode.kind === "all") return t("header.allModels");
   if (mode.kind === "auto") {
     const name = autoModelName(dashboard);
-    return name ? `Auto · ${name}` : mode.tool ? "Auto" : "Auto (most active)";
+    return name
+      ? t("header.autoWithModel", { model: name })
+      : mode.tool
+        ? t("header.auto")
+        : t("header.autoMostActive");
   }
-  if (mode.kind === "model") return mode.key.model ?? "Unknown model";
+  if (mode.kind === "model") return mode.key.model ?? t("common.unknownModel");
   const row = selectedCohort(dashboard);
-  return row ? cohortMenuTitle(row) : "Model";
+  return row ? cohortMenuTitle(row) : t("header.model");
 }
 
 /** Picker label for assistive tech, with the coding tool the chip stands for spelled out. */
@@ -55,7 +55,9 @@ export function pickerAccessibleLabel(dashboard: Dashboard) {
   const { mode } = dashboard;
   const tool = pickerTool(dashboard);
   if (mode.kind === "auto" && mode.tool)
-    return [`Auto in ${toolLabel(mode.tool)}`, autoModelName(dashboard)].filter(Boolean).join(" · ");
+    return [t("header.autoIn", { tool: toolLabel(mode.tool) }), autoModelName(dashboard)]
+      .filter(Boolean)
+      .join(" · ");
   return tool ? `${toolLabel(tool)} · ${pickerLabel(dashboard)}` : pickerLabel(dashboard);
 }
 
@@ -63,6 +65,7 @@ export function pickerAccessibleLabel(dashboard: Dashboard) {
 const NAVIGABLE = "[role=option], .picker-more";
 
 export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const selection = dashboard.selection;
   const toolFilter = useStore(store, (s) => s.ui.toolFilter);
@@ -120,6 +123,14 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
     dashboard.mode.kind === "model" ||
     (dashboard.mode.kind === "cohort" && !recent.some(({ row }) => isSelectedCohort(row)));
   const tool = pickerTool(dashboard);
+  const toolOptions = [
+    { value: "all" as ToolFilter, label: t("header.all") },
+    ...CLIENT_ORDER.map((id) => ({
+      value: id as ToolFilter,
+      label: SOURCE_TITLES[id],
+      toolStyle: toolChipStyle(id),
+    })),
+  ];
 
   return (
     <div
@@ -138,7 +149,7 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
         className="picker-trigger"
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={`Model: ${pickerAccessibleLabel(dashboard)}. Change model and filters`}
+        aria-label={t("header.pickerAria", { label: pickerAccessibleLabel(dashboard) })}
         onClick={() => {
           if (!open) setMoreOpen(selectionInMore);
           setOpen(!open);
@@ -156,45 +167,45 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
         <ChevronDown size={16} aria-hidden="true" className="chevron" />
       </button>
       {open && (
-        <div className="popover picker-popover" role="dialog" aria-label="Choose a model">
+        <div className="popover picker-popover" role="dialog" aria-label={t("header.chooseModel")}>
           <div className="picker-filters">
             <Segmented
-              label="Coding tool"
+              label={t("header.codingTool")}
               className="tool-filter"
               size="sm"
               value={toolFilter}
-              options={TOOL_OPTIONS}
+              options={toolOptions}
               onChange={(v) => store.setToolFilter(v)}
             />
             <label className="picker-provider">
-              <span>Provider route</span>
+              <span>{t("header.providerRoute")}</span>
               <select
                 value={providerFilter}
                 onChange={(e) => store.setProviderFilter(e.target.value as ProviderFilter)}
               >
-                <option value="all">All routes</option>
+                <option value="all">{t("header.allRoutes")}</option>
                 {Object.entries(PROVIDER_TITLES).map(([value, label]) => (
                   <option key={value} value={value}>
-                    {label}
+                    {value === "unknown" ? t("common.unknownRoute") : label}
                   </option>
                 ))}
               </select>
             </label>
           </div>
-          <div className="picker-list" role="listbox" aria-label="Models">
+          <div className="picker-list" role="listbox" aria-label={t("header.models")}>
             <PickerOption
               selected={selection === autoSelection(null)}
               onSelect={() => choose(autoSelection(null))}
-              title="Auto (most active)"
+              title={t("header.autoMostActive")}
               hint={
                 activeName && dashboard.mode.kind === "auto" && !dashboard.mode.tool
-                  ? `Follows the model you are using now · ${activeName}`
-                  : "Follows the model you are using now"
+                  ? t("header.autoFollowsNow", { model: activeName })
+                  : t("header.autoFollows")
               }
             />
             {dashboard.tools.length > 0 && (
-              <div role="group" aria-label="Auto within a coding tool">
-                <div className="picker-section">Auto within a coding tool</div>
+              <div role="group" aria-label={t("header.autoWithinTool")}>
+                <div className="picker-section">{t("header.autoWithinTool")}</div>
                 {dashboard.tools.map((id) => (
                   <PickerOption
                     key={id}
@@ -208,8 +219,8 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
               </div>
             )}
             {recent.length > 0 && (
-              <div role="group" aria-label="Recent models">
-                <div className="picker-section">Recent models</div>
+              <div role="group" aria-label={t("header.recentModels")}>
+                <div className="picker-section">{t("header.recentModels")}</div>
                 {recent.map(({ row, title }) => (
                   <PickerOption
                     key={row.key}
@@ -225,8 +236,8 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
             <PickerOption
               selected={selection === "all"}
               onSelect={() => choose("all")}
-              title="All models"
-              hint="Compare every model side by side"
+              title={t("header.allModels")}
+              hint={t("header.compareEvery")}
             />
             <button
               type="button"
@@ -234,20 +245,23 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
               aria-expanded={moreOpen}
               onClick={() => setMoreOpen(!moreOpen)}
             >
-              <span>More models</span>
+              <span>{t("header.moreModels")}</span>
               <ChevronDown size={16} aria-hidden="true" className="chevron" />
             </button>
             {moreOpen && (
               <>
                 {dashboard.modelRows.length > 0 && (
-                  <div role="group" aria-label="Pin a model">
-                    <div className="picker-section">Pin a model</div>
+                  <div role="group" aria-label={t("header.pinModel")}>
+                    <div className="picker-section">{t("header.pinModel")}</div>
                     {sortModelRows(dashboard.modelRows, "recent").map((row) => (
                       <PickerOption
                         key={row.key}
                         selected={selection === modelSelection(row.model)}
                         onSelect={() => choose(row.key)}
-                        title={[row.model.model ?? "Unknown model", providerName(row.model.provider)]
+                        title={[
+                          row.model.model ?? t("common.unknownModel"),
+                          providerName(row.model.provider),
+                        ]
                           .filter(Boolean)
                           .join(" · ")}
                       />
@@ -257,7 +271,7 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
                 {sections.map((section) => (
                   <div key={section.id} role="group" aria-label={SOURCE_TITLES[section.id]}>
                     <div className="picker-section">
-                      {clientLabel(section.rows[0].sample)} · exact cohorts
+                      {t("header.exactCohorts", { tool: clientLabel(section.rows[0].sample) })}
                     </div>
                     {section.rows.map((row) => (
                       <PickerOption
@@ -271,9 +285,7 @@ export function ModelPicker({ dashboard }: { dashboard: Dashboard }) {
                 ))}
               </>
             )}
-            {!sections.length && (
-              <p className="picker-empty">No models for this filter yet.</p>
-            )}
+            {!sections.length && <p className="picker-empty">{t("header.noModels")}</p>}
           </div>
         </div>
       )}
@@ -318,6 +330,7 @@ function PickerOption({
 }
 
 export function Header({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const view = useStore(store, (s) => s.ui.view);
   return (
@@ -330,9 +343,9 @@ export function Header({ dashboard }: { dashboard: Dashboard }) {
       <button
         type="button"
         className="icon-button"
-        aria-label={view === "settings" ? "Close settings" : "Open settings"}
+        aria-label={view === "settings" ? t("header.closeSettings") : t("header.openSettings")}
         aria-pressed={view === "settings"}
-        title="Settings"
+        title={t("header.settingsTitle")}
         onClick={() => store.setView(view === "settings" ? "home" : "settings")}
       >
         <SettingsIcon size={20} aria-hidden="true" />
