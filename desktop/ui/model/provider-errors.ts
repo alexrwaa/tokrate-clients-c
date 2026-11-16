@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { DAY, relativeTime } from "../metrics";
 import type {
   Board,
@@ -9,21 +10,52 @@ import type {
 /** Other groups named after the main one, "Also: {model} ({n})". */
 const MAX_ALSO = 2;
 
-const times = (count: number) => (count === 1 ? "time" : "times");
+const times = (count: number) =>
+  t(count === 1 ? "providerErrors.time" : "providerErrors.times");
+const requests = (count: number) => t(count === 1 ? "count.request" : "count.requests", { n: "" }).trim();
+const serverErrors = (count: number) => t(count === 1 ? "count.error" : "count.errors", { n: "" }).trim();
 
 /** The sentence for the main group (contract "Local provider errors", "Provider throttling" and "Provider edge blocks"). */
 function groupText(group: ProviderErrorGroup, ago: string): string {
   switch (group.kind) {
     case "overloaded":
-      return `You hit “${group.client === "codex" ? "model at capacity" : "overloaded"}” ${group.count} ${times(group.count)} on ${group.model} in the last 24 hours, most recently ${ago}. That’s the provider at capacity, not your connection.`;
-    case "throttled": {
-      const used = group.planUsedPercent === undefined ? "" : ` (${group.planUsedPercent}% used)`;
-      return `You were rate limited ${group.count} ${times(group.count)} on ${group.model} in the last 24 hours while your plan still had quota left${used}. That’s the provider throttling, not your plan limit.`;
-    }
+      return t("providerErrors.overloaded", {
+        kind:
+          group.client === "codex"
+            ? t("providerErrors.kindCapacity")
+            : t("providerErrors.kindOverloaded"),
+        count: group.count,
+        times: times(group.count),
+        model: group.model,
+        ago,
+      });
+    case "throttled":
+      return group.planUsedPercent === undefined
+        ? t("providerErrors.throttled", {
+            count: group.count,
+            times: times(group.count),
+            model: group.model,
+          })
+        : t("providerErrors.throttledUsed", {
+            count: group.count,
+            times: times(group.count),
+            model: group.model,
+            percent: group.planUsedPercent,
+          });
     case "blocked":
-      return `The provider’s firewall blocked ${group.count} ${group.count === 1 ? "request" : "requests"} to ${group.model} in the last 24 hours, most recently ${ago}. It shows as a sign-in error, but it isn’t your login: the block comes from the provider’s firewall or your network (for example a VPN).`;
+      return t("providerErrors.blocked", {
+        count: group.count,
+        requests: requests(group.count),
+        model: group.model,
+        ago,
+      });
     case "serverError":
-      return `${group.model} returned ${group.count} server ${group.count === 1 ? "error" : "errors"} in the last 24 hours, most recently ${ago}. That’s a failure at the provider, not your connection.`;
+      return t("providerErrors.serverError", {
+        count: group.count,
+        errors: serverErrors(group.count),
+        model: group.model,
+        ago,
+      });
   }
 }
 
@@ -48,7 +80,7 @@ export function providerErrorLine(
   const also = recent
     .slice(1, 1 + MAX_ALSO)
     .map(({ group: other }) => `${other.model} (${other.count})`);
-  return also.length ? `${line} Also: ${also.join(", ")}` : line;
+  return also.length ? line + t("providerErrors.also", { list: also.join(", ") }) : line;
 }
 
 /** How long the "no longer report" line stays. */
@@ -73,21 +105,47 @@ export interface CommunityErrorLine {
   models: string[];
 }
 
-const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-const contributors = (n: number) => count(n, "contributor", "contributors");
+const contributors = (n: number) => t(n === 1 ? "count.contributor" : "count.contributors", { n });
 
 /** The alert's form for the user, after the contract's "The community line". */
 function alertText(alert: RelevantErrorAlert, now: number): string {
   if (alert.notJustYou)
-    return `It’s not just you: ${alert.others} other ${alert.others === 1 ? "contributor" : "contributors"} hit provider errors on ${alert.model} in the last hour.`;
+    return t("providerErrors.notJustYou", {
+      count: alert.others,
+      contributors: t(alert.others === 1 ? "count.contributor" : "count.contributors", {
+        n: "",
+      }).trim(),
+      model: alert.model,
+    });
   const parts = [
-    alert.overloaded > 0 ? `${alert.overloaded} overloaded / at capacity` : null,
-    alert.serverError > 0 ? count(alert.serverError, "server error", "server errors") : null,
-    alert.throttled > 0 ? `${alert.throttled} throttled (not plan limits)` : null,
-    alert.blocked > 0 ? `${alert.blocked} blocked by the provider’s firewall` : null,
+    alert.overloaded > 0
+      ? t("providerErrors.partOverloaded", { count: alert.overloaded })
+      : null,
+    alert.serverError > 0
+      ? t("providerErrors.partServer", {
+          count: alert.serverError,
+          errors: serverErrors(alert.serverError),
+        })
+      : null,
+    alert.throttled > 0
+      ? t("providerErrors.partThrottled", { count: alert.throttled })
+      : null,
+    alert.blocked > 0 ? t("providerErrors.partBlocked", { count: alert.blocked }) : null,
   ].filter((part) => part !== null);
-  const counts = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts[0];
-  return `Tokrate contributors are reporting provider errors on ${alert.model}: ${counts} from ${contributors(alert.failingContributors)} in the last hour, latest ${relativeTime(Date.parse(alert.lastFailureAt), now)}.`;
+  const separator = t("providerErrors.separator");
+  const counts =
+    parts.length > 1
+      ? t("providerErrors.joinTwo", {
+          first: parts.slice(0, -1).join(separator),
+          last: parts.at(-1) ?? "",
+        })
+      : parts[0];
+  return t("providerErrors.alert", {
+    model: alert.model,
+    counts,
+    contributors: contributors(alert.failingContributors),
+    ago: relativeTime(Date.parse(alert.lastFailureAt), now),
+  });
 }
 
 /**
@@ -108,7 +166,7 @@ export function communityAlertLine({
   const line = alertText(main, now);
   return {
     kind: "alert",
-    text: also.length ? `${line} Also: ${also.join(", ")}` : line,
+    text: also.length ? line + t("providerErrors.also", { list: also.join(", ") }) : line,
     models: [main.model, ...also],
   };
 }
@@ -129,7 +187,10 @@ export function communityErrorLine(
   return cleared
     ? {
         kind: "recovery",
-        text: `${cleared.model}: contributors no longer report provider errors (cleared ${relativeTime(cleared.at, input.now)}).`,
+        text: t("providerErrors.recovery", {
+          model: cleared.model,
+          ago: relativeTime(cleared.at, input.now),
+        }),
         models: [],
       }
     : null;
