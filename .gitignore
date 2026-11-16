@@ -11,3 +11,4 @@ desktop/src-tauri/gen/
 desktop/src-tauri/icons/generated/
 .local/
 linux/headless/target/
+.ci/
