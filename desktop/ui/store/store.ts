@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { AsyncGate } from "../async-gate";
+import { t } from "../i18n";
 import { advanceRecovery, NO_RECOVERY } from "../model/provider-errors";
 import type {
   AppState,
@@ -19,8 +20,11 @@ import type {
 
 /** Bump together with the notice text in docs and the Rust constant. */
 export const SHARING_NOTICE_VERSION = "2026-11-13-v8";
-const MONITOR_UNREACHABLE =
-  "Cannot reach the local monitor. Restart Tokrate to reconnect.";
+/**
+ * The exact text of the monitor error, so the next poll can clear its own message whatever the
+ * interface language is at that moment.
+ */
+let monitorErrorText = "";
 const AUTOMATIC_UPDATE_REVISIT_MS = 60 * 60 * 1000;
 const POLL_MS = 5000;
 /** Relative times and ranges follow the wall clock at most this stale between data changes. */
@@ -93,7 +97,7 @@ export class AppStore {
         checkInFlight: false,
         installInFlight: false,
         available: null,
-        status: "Loading update preferences…",
+        status: t("update.status.loading"),
         progress: { downloaded: 0, total: 0 },
       },
       sentExample: { text: null, failed: false },
@@ -222,8 +226,7 @@ export class AppStore {
     } catch {
       if (this.gate.isLatest(epoch))
         this.set({
-          error:
-            "The change could not be saved. Review your settings and try again.",
+          error: t("errors.saveFailed"),
         });
     } finally {
       this.gate.finishMutation();
@@ -293,7 +296,9 @@ export class AppStore {
           JSON.stringify({ ...snapshot, records: [], recordsChanged: false });
       // A recovered monitor clears its own message; save errors stay until the next action.
       const error =
-        this.state.error === MONITOR_UNREACHABLE ? "" : this.state.error;
+        this.state.error === monitorErrorText && monitorErrorText !== ""
+          ? ""
+          : this.state.error;
       if (changed)
         this.set({
           snapshot: this.merge(next),
@@ -305,7 +310,8 @@ export class AppStore {
         this.set({ now: clock, error });
       if (!this.state.update.loaded) void this.loadUpdatePreferences();
     } catch {
-      this.set({ error: MONITOR_UNREACHABLE });
+      monitorErrorText = t("errors.monitorUnreachable");
+      this.set({ error: monitorErrorText });
     }
   };
 
@@ -326,17 +332,19 @@ export class AppStore {
       const preferences = await this.bridge.updatePreferences();
       const smoke = this.state.snapshot.smoke;
       const status = smoke
-        ? "Updater networking is disabled in native smoke runs."
+        ? t("update.status.smoke")
         : preferences.mode === "manual"
           ? preferences.automaticChecks
-            ? "Automatic checks are on. Debian package installs remain manual."
-            : "Automatic checks are off. You can still check manually."
+            ? t("update.status.autoOnManual")
+            : t("update.status.autoOff")
           : preferences.mode === "unavailable"
-            ? "This installation does not support in-app updates."
+            ? t("update.status.unsupported")
             : preferences.automaticChecks
-              ? "Automatic checks are on. Updates require your click to install."
-              : "Automatic checks are off. You can still check manually.";
+              ? t("update.status.autoOn")
+              : t("update.status.autoOff");
       this.setUpdate({ preferences, status });
+      // The portable build reports mode "unavailable", so neither this check nor the hourly
+      // revisit below can start a request on its own: only a manual click ever checks.
       if (
         !smoke &&
         preferences.mode !== "unavailable" &&
@@ -344,7 +352,7 @@ export class AppStore {
       )
         void this.checkForUpdates(true);
     } catch {
-      this.setUpdate({ status: "Update preferences could not be loaded." });
+      this.setUpdate({ status: t("update.status.couldNotLoad") });
     }
   }
   setAutomaticUpdateChecks = async (enabled: boolean) => {
@@ -355,14 +363,14 @@ export class AppStore {
         preferences,
         status:
           preferences.mode === "manual" && enabled
-            ? "Automatic checks are on. Debian package installs remain manual."
+            ? t("update.status.autoOnManual")
             : enabled
-              ? "Automatic checks are on. Updates require your click to install."
-              : "Automatic checks are off. You can still check manually.",
+              ? t("update.status.autoOn")
+              : t("update.status.autoOff"),
       });
       if (enabled) void this.checkForUpdates(true);
     } catch {
-      this.setUpdate({ status: "Update preference could not be saved." });
+      this.setUpdate({ status: t("update.status.couldNotSave") });
     }
   };
   checkForUpdates = async (automatic: boolean) => {
@@ -379,16 +387,16 @@ export class AppStore {
       checkInFlight: true,
       status:
         update.preferences.mode === "manual"
-          ? "Checking Tokrate’s Debian update feed…"
-          : "Checking Tokrate’s signed update feed…",
+          ? t("update.status.checkingManual")
+          : t("update.status.checkingSigned"),
     });
     try {
       const result = await this.bridge.checkUpdate(automatic);
       if (!result.started) {
         this.setUpdate({
           status: automatic
-            ? "The automatic check is throttled. You can check manually."
-            : "An update check is already in progress.",
+            ? t("update.status.throttled")
+            : t("update.status.inProgress"),
         });
         return;
       }
@@ -396,13 +404,13 @@ export class AppStore {
         available: result.update,
         status: result.update
           ? update.preferences.mode === "manual"
-            ? `Version ${result.update.version} is available. Download it and install it with your package manager.`
-            : `Version ${result.update.version} is ready if you choose to install it.`
-          : `Tokrate ${update.preferences.currentVersion} is up to date.`,
+            ? t("update.status.versionManual", { version: result.update.version })
+            : t("update.status.versionReady", { version: result.update.version })
+          : t("update.status.upToDate", { version: update.preferences.currentVersion }),
       });
     } catch {
       this.setUpdate({
-        status: "Could not check for updates. Check your connection and try again.",
+        status: t("update.status.failed"),
       });
     } finally {
       this.setUpdate({ checkInFlight: false });
@@ -421,7 +429,7 @@ export class AppStore {
     this.setUpdate({
       installInFlight: true,
       progress: { downloaded: 0, total: 0 },
-      status: "Downloading and verifying the signed update…",
+      status: t("update.status.downloading"),
     });
     try {
       await this.bridge.installUpdate((event: UpdateDownloadEvent) => {
@@ -440,13 +448,12 @@ export class AppStore {
       });
       this.setUpdate({
         available: null,
-        status: "Update installed. Restarting Tokrate…",
+        status: t("update.status.installed"),
       });
     } catch {
       this.setUpdate({
         installInFlight: false,
-        status:
-          "The signed update could not be verified or installed. Your current version remains active.",
+        status: t("update.status.verifyFailed"),
       });
       return;
     }
@@ -455,8 +462,7 @@ export class AppStore {
     } catch {
       this.setUpdate({
         installInFlight: false,
-        status:
-          "The update is installed. Quit and reopen Tokrate to finish applying it.",
+        status: t("update.status.restartManually"),
       });
     }
   };
