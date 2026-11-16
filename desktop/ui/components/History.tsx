@@ -1,10 +1,10 @@
+import { t, useI18n } from "../i18n";
 import { Mark, useAppStore, Chip } from "./primitives";
 import { ModelPicker } from "./Header";
 import { Footer } from "./Footer";
 import { chartCopy, MetricToggle, RangeToggle, TrendDetails, useTrendBuckets } from "./Trend";
 import { TrendChart } from "./TrendChart";
 import {
-  GROK_RESPONSE_EXPLANATION,
   clientLabel,
   isGrokBuild,
   isSubagent,
@@ -31,12 +31,12 @@ function RequestTokens({ m }: { m: Metric }) {
   if (total !== null) return <>{total}</>;
   if (isSubagent(m))
     return (
-      <span className="muted-value" title="Counted in the request that started it">
+      <span className="muted-value" title={t("history.countedInParent")}>
         —
       </span>
     );
   return (
-    <span className="muted-value" title="Delegated work not yet counted">
+    <span className="muted-value" title={t("history.delegatedNotCounted")}>
       {m.outputTokens}
     </span>
   );
@@ -44,38 +44,35 @@ function RequestTokens({ m }: { m: Metric }) {
 
 /** The full-history window: larger chart, the numbers behind it and the bounded 500-row table. */
 export function HistoryView({ dashboard }: { dashboard: Dashboard }) {
+  const { t } = useI18n();
   const store = useAppStore();
   const metric = useStore(store, (s) => s.ui.chartMetric);
   const copy = chartCopy(dashboard, metric);
   const data = useTrendBuckets(dashboard, copy.metric);
   const rows = dashboard.historyRows.slice(0, MAX_ROWS);
-  const dayLabel = dashboard.days === 1 ? "24 hours" : "7 days";
+  const dayLabel = dashboard.days === 1 ? t("history.range24") : t("history.range7");
   return (
     <div className="history-view">
       <header className="topbar history-topbar">
         <div className="brand">
           <Mark size={28} />
-          <span>Tokrate history</span>
+          <span>{t("history.brand")}</span>
         </div>
         <ModelPicker dashboard={dashboard} />
         <RangeToggle />
       </header>
       <div className="scroll history-scroll">
         {dashboard.isAll ? (
-          <section className="card" aria-label="Trend">
-            <h2>All models</h2>
-            <p className="hint">
-              Choose one model above to see its trend, ranges and baseline. Comparing all models
-              never pools their speeds; the table below lists every turn with its response speed
-              and turn speed.
-            </p>
+          <section className="card" aria-label={t("trend.aria")}>
+            <h2>{t("history.allModels")}</h2>
+            <p className="hint">{t("history.chooseHint")}</p>
           </section>
         ) : (
           <div className="history-grid">
-            <section className="card trend history-chart" aria-label="Trend">
+            <section className="card trend history-chart" aria-label={t("trend.aria")}>
               <div className="card-head">
                 <h2>
-                  {modelName(dashboard.sample)} · last {dayLabel}
+                  {t("history.modelLast", { model: modelName(dashboard.sample), range: dayLabel })}
                 </h2>
                 <MetricToggle dashboard={dashboard} />
               </div>
@@ -85,34 +82,39 @@ export function HistoryView({ dashboard }: { dashboard: Dashboard }) {
                 days={dashboard.days}
                 height={260}
                 emptyMessage={copy.empty}
-                ariaLabel={`${copy.title} over the last ${dayLabel}`}
+                ariaLabel={t("trend.chartAria", { title: copy.title, range: dayLabel })}
                 digits={copy.digits}
                 noun={copy.noun}
               />
             </section>
-            <section className="card history-details" aria-label="Details">
-              <h2>Details</h2>
+            <section className="card history-details" aria-label={t("history.details")}>
+              <h2>{t("history.details")}</h2>
               <TrendDetails dashboard={dashboard} />
             </section>
           </div>
         )}
         <section className="card history-table-card" aria-labelledby="turn-history">
           <h2 id="turn-history">
-            Turn history <span className="muted-count">({rows.length} shown, newest first)</span>
+            {t("history.turnHistory")}{" "}
+            <span className="muted-count">{t("history.shown", { count: rows.length })}</span>
           </h2>
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Completed</th>
-                  <th scope="col">Coding tool and model</th>
-                  <th scope="col" className="num">Tokens</th>
-                  <th scope="col" className="num" title="Output tokens plus delegated subagent work">
-                    Tokens/request
+                  <th scope="col">{t("history.completed")}</th>
+                  <th scope="col">{t("history.toolAndModel")}</th>
+                  <th scope="col" className="num">{t("history.tokens")}</th>
+                  <th
+                    scope="col"
+                    className="num"
+                    title={t("history.tokensPerRequestTitle")}
+                  >
+                    {t("history.tokensPerRequest")}
                   </th>
-                  <th scope="col" className="num">Response speed</th>
-                  <th scope="col" className="num">Turn speed</th>
-                  <th scope="col" className="num">First token</th>
+                  <th scope="col" className="num">{t("history.responseSpeed")}</th>
+                  <th scope="col" className="num">{t("history.turnSpeed")}</th>
+                  <th scope="col" className="num">{t("history.firstToken")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,7 +139,7 @@ export function HistoryView({ dashboard }: { dashboard: Dashboard }) {
                     <td className="num">
                       <RequestTokens m={m} />
                     </td>
-                    <td className="num" title={isGrokBuild(m) ? GROK_RESPONSE_EXPLANATION : undefined}>
+                    <td className="num" title={isGrokBuild(m) ? t("metric.grokExplanation") : undefined}>
                       {responseSpeed(m) === null ? (
                         "—"
                       ) : (
@@ -145,8 +147,12 @@ export function HistoryView({ dashboard }: { dashboard: Dashboard }) {
                           <strong>{num(responseSpeed(m))}</strong> tok/s
                           <span className="table-sub">
                             {isGrokBuild(m)
-                              ? `${m.responseCount ?? 0} ${m.responseCount === 1 ? "model call" : "model calls"}`
-                              : `${m.responseCount ?? 0} ${m.responseCount === 1 ? "response" : "responses"}`}
+                              ? t((m.responseCount ?? 0) === 1 ? "count.modelCall" : "count.modelCalls", {
+                                  n: m.responseCount ?? 0,
+                                })
+                              : t((m.responseCount ?? 0) === 1 ? "count.response" : "count.responses", {
+                                  n: m.responseCount ?? 0,
+                                })}
                           </span>
                         </>
                       )}
@@ -162,7 +168,7 @@ export function HistoryView({ dashboard }: { dashboard: Dashboard }) {
                 ))}
               </tbody>
             </table>
-            {!rows.length && <p className="empty">Collecting data</p>}
+            {!rows.length && <p className="empty">{t("history.collecting")}</p>}
           </div>
         </section>
       </div>
